@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9EABA1AE1B5539860052A5A6 /* MyURLProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EABA1AD1B5539860052A5A6 /* MyURLProtocol.swift */; };
+		9ECE01A61B59E461006B6C26 /* libdtdev.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9ECE01A51B59E461006B6C26 /* libdtdev.a */; };
+		9ECE01A81B59E675006B6C26 /* ExternalAccessory.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9ECE01A71B59E675006B6C26 /* ExternalAccessory.framework */; };
 		9EE6802F1B38888E00C5CF7D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EE6802E1B38888E00C5CF7D /* AppDelegate.swift */; };
 		9EE680311B38888E00C5CF7D /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EE680301B38888E00C5CF7D /* ViewController.swift */; };
 		9EE680341B38888E00C5CF7D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9EE680321B38888E00C5CF7D /* Main.storyboard */; };
@@ -26,6 +29,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		9EABA1AD1B5539860052A5A6 /* MyURLProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyURLProtocol.swift; sourceTree = "<group>"; };
+		9ECE01A01B59D887006B6C26 /* DTDevices.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTDevices.h; sourceTree = "<group>"; };
+		9ECE01A51B59E461006B6C26 /* libdtdev.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libdtdev.a; sourceTree = "<group>"; };
+		9ECE01A71B59E675006B6C26 /* ExternalAccessory.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ExternalAccessory.framework; path = System/Library/Frameworks/ExternalAccessory.framework; sourceTree = SDKROOT; };
 		9EE680291B38888E00C5CF7D /* RAMBO.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RAMBO.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9EE6802D1B38888E00C5CF7D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9EE6802E1B38888E00C5CF7D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -43,6 +50,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9ECE01A81B59E675006B6C26 /* ExternalAccessory.framework in Frameworks */,
+				9ECE01A61B59E461006B6C26 /* libdtdev.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -59,6 +68,7 @@
 		9EE680201B38888E00C5CF7D = {
 			isa = PBXGroup;
 			children = (
+				9ECE01A71B59E675006B6C26 /* ExternalAccessory.framework */,
 				9EE6802B1B38888E00C5CF7D /* RAMBO */,
 				9EE680411B38888E00C5CF7D /* RAMBOTests */,
 				9EE6802A1B38888E00C5CF7D /* Products */,
@@ -77,12 +87,15 @@
 		9EE6802B1B38888E00C5CF7D /* RAMBO */ = {
 			isa = PBXGroup;
 			children = (
+				9ECE01A51B59E461006B6C26 /* libdtdev.a */,
+				9ECE01A01B59D887006B6C26 /* DTDevices.h */,
 				9EE6802E1B38888E00C5CF7D /* AppDelegate.swift */,
 				9EE680301B38888E00C5CF7D /* ViewController.swift */,
 				9EE680321B38888E00C5CF7D /* Main.storyboard */,
 				9EE680351B38888E00C5CF7D /* Images.xcassets */,
 				9EE680371B38888E00C5CF7D /* LaunchScreen.xib */,
 				9EE6802C1B38888E00C5CF7D /* Supporting Files */,
+				9EABA1AD1B5539860052A5A6 /* MyURLProtocol.swift */,
 			);
 			path = RAMBO;
 			sourceTree = "<group>";
@@ -161,6 +174,7 @@
 				TargetAttributes = {
 					9EE680281B38888E00C5CF7D = {
 						CreatedOnToolsVersion = 6.3.2;
+						DevelopmentTeam = F738FAUL9H;
 					};
 					9EE6803D1B38888E00C5CF7D = {
 						CreatedOnToolsVersion = 6.3.2;
@@ -214,6 +228,7 @@
 			files = (
 				9EE680311B38888E00C5CF7D /* ViewController.swift in Sources */,
 				9EE6802F1B38888E00C5CF7D /* AppDelegate.swift in Sources */,
+				9EABA1AE1B5539860052A5A6 /* MyURLProtocol.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -342,9 +357,18 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = RAMBO/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/RAMBO",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
+				"SWIFT_OBJC_BRIDGING_HEADER[arch=*]" = RAMBO/DTDevices.h;
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -352,9 +376,18 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = RAMBO/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/RAMBO",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
+				"SWIFT_OBJC_BRIDGING_HEADER[arch=*]" = RAMBO/DTDevices.h;
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
@@ -411,6 +444,7 @@
 				9EE6804A1B38888F00C5CF7D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		9EE6804B1B38888F00C5CF7D /* Build configuration list for PBXNativeTarget "RAMBOTests" */ = {
 			isa = XCConfigurationList;
@@ -419,6 +453,7 @@
 				9EE6804D1B38888F00C5CF7D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
