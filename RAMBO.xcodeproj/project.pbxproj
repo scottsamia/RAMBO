@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9E75F5AE1B5ACCCA00C64132 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 9E75F5AD1B5ACCCA00C64132 /* Settings.bundle */; };
 		9EABA1AE1B5539860052A5A6 /* MyURLProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EABA1AD1B5539860052A5A6 /* MyURLProtocol.swift */; };
 		9ECE01A61B59E461006B6C26 /* libdtdev.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9ECE01A51B59E461006B6C26 /* libdtdev.a */; };
 		9ECE01A81B59E675006B6C26 /* ExternalAccessory.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9ECE01A71B59E675006B6C26 /* ExternalAccessory.framework */; };
@@ -29,6 +30,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		9E75F5AD1B5ACCCA00C64132 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
 		9EABA1AD1B5539860052A5A6 /* MyURLProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyURLProtocol.swift; sourceTree = "<group>"; };
 		9ECE01A01B59D887006B6C26 /* DTDevices.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTDevices.h; sourceTree = "<group>"; };
 		9ECE01A51B59E461006B6C26 /* libdtdev.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libdtdev.a; sourceTree = "<group>"; };
@@ -92,6 +94,7 @@
 				9EE6802E1B38888E00C5CF7D /* AppDelegate.swift */,
 				9EE680301B38888E00C5CF7D /* ViewController.swift */,
 				9EE680321B38888E00C5CF7D /* Main.storyboard */,
+				9E75F5AD1B5ACCCA00C64132 /* Settings.bundle */,
 				9EE680351B38888E00C5CF7D /* Images.xcassets */,
 				9EE680371B38888E00C5CF7D /* LaunchScreen.xib */,
 				9EE6802C1B38888E00C5CF7D /* Supporting Files */,
@@ -206,6 +209,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9E75F5AE1B5ACCCA00C64132 /* Settings.bundle in Resources */,
 				9EE680341B38888E00C5CF7D /* Main.storyboard in Resources */,
 				9EE680391B38888E00C5CF7D /* LaunchScreen.xib in Resources */,
 				9EE680361B38888E00C5CF7D /* Images.xcassets in Resources */,

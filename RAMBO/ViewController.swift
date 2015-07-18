@@ -14,6 +14,7 @@ class ViewController: UIViewController, UIWebViewDelegate, NSURLConnectionDelega
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     @IBOutlet weak var addressTxb: UITextField!
     @IBOutlet weak var msgDisplay: UILabel!
+    let userDefaults = NSUserDefaults.standardUserDefaults()
     var lastURL: String = ""
     var refreshControl:UIRefreshControl!
     let scanner: DTDevices = DTDevices()
@@ -32,14 +33,12 @@ class ViewController: UIViewController, UIWebViewDelegate, NSURLConnectionDelega
         self.webView.scrollView.contentInset = UIEdgeInsets(top: 20,left: 0,bottom: 0,right: 0)
         self.webView.scrollView.backgroundColor = UIColor.clearColor()
         self.webView.backgroundColor = UIColor.clearColor()
+        
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "defaultsChanged",
+            name: NSUserDefaultsDidChangeNotification, object: nil)
 
-        lastURL = "https://rambo.rogers-corp.com"
-        
-        var url = NSURL(string: lastURL)
-        var request = NSURLRequest(URL:url!)
-        
-   
-        webView.loadRequest(request)
+        //lastURL = "https://rambo.rogers-corp.com"
+        loadSite()
         
         println("Web View created")
         scanner.connect()
@@ -87,8 +86,39 @@ class ViewController: UIViewController, UIWebViewDelegate, NSURLConnectionDelega
     
     func refresh(sender:UIRefreshControl)
     {
-            webView.reload()
-            sender.endRefreshing()
+        webView.reload()
+        sender.endRefreshing()
+    }
+    func defaultsChanged() {
+        loadSite()
+    }
+    
+    func loadSite() {
+        var url_pref: String = userDefaults.stringForKey("url_preference")!
+        let ssl_pref: Bool = userDefaults.boolForKey("ssl_preference")
+        if (url_pref.lowercaseString.rangeOfString("http") != nil){
+            if ssl_pref {
+                url_pref = url_pref.stringByReplacingOccurrencesOfString("http://", withString: "https://", options: NSStringCompareOptions.LiteralSearch, range: nil)
+            }
+            else {
+                url_pref = url_pref.stringByReplacingOccurrencesOfString("https://", withString: "http://", options: NSStringCompareOptions.LiteralSearch, range: nil)
+            }
+        }
+        else {
+            if ssl_pref {
+                url_pref = "https://" + url_pref
+            }
+            else {
+                url_pref = "http://" + url_pref
+            }
+        }
+        
+        lastURL = url_pref
+        var url = NSURL(string: lastURL)
+        var request = NSURLRequest(URL:url!)
+        
+        
+        webView.loadRequest(request)
     }
     
 
@@ -97,6 +127,10 @@ class ViewController: UIViewController, UIWebViewDelegate, NSURLConnectionDelega
     }
     @IBAction func scanButtonDown(sender: AnyObject) {
         scanner.barcodeStopScan(nil)
+    }
+    
+    deinit {
+        NSNotificationCenter.defaultCenter().removeObserver(self)
     }
     
 }
