@@ -42,6 +42,17 @@
                                     <action selector="scanButtonUp:" destination="BYZ-38-t0r" eventType="touchUpInside" id="3d2-Px-nFS"/>
                                 </connections>
                             </button>
+                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ORM-9a-EQV">
+                                <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                                <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                                <color key="tintColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                                <state key="normal" title="Configure">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="handleTakeMeButtonPressed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Ray-p9-7tJ"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
@@ -61,13 +72,14 @@
                     <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina4"/>
                     <connections>
                         <outlet property="activityIndicator" destination="at9-Ab-eD1" id="lYi-Nf-bkV"/>
+                        <outlet property="configureBtn" destination="ORM-9a-EQV" id="p82-re-emQ"/>
                         <outlet property="msgDisplay" destination="GVh-TB-p8N" id="0cD-Dx-wlA"/>
                         <outlet property="webView" destination="nKk-ot-cFt" id="dep-BC-g2g"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1747" y="286"/>
+            <point key="canvasLocation" x="-1413" y="-2570"/>
         </scene>
     </scenes>
 </document>

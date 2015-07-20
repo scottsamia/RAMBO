@@ -14,6 +14,8 @@ class ViewController: UIViewController, UIWebViewDelegate, NSURLConnectionDelega
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     @IBOutlet weak var addressTxb: UITextField!
     @IBOutlet weak var msgDisplay: UILabel!
+    @IBOutlet weak var configureBtn: UIButton!
+    
     let userDefaults = NSUserDefaults.standardUserDefaults()
     var lastURL: String = ""
     var refreshControl:UIRefreshControl!
@@ -62,10 +64,19 @@ class ViewController: UIViewController, UIWebViewDelegate, NSURLConnectionDelega
     
     func barcodeData(barcode: String!, type: Int32) {
         msgDisplay.text = barcode + " (" + type.description + ")"
-        let script = "adaptiscanBarcode('" + barcode + "','" + type.description + "')"
-        if let returnedString = webView.stringByEvaluatingJavaScriptFromString(script) {
-            msgDisplay.text = msgDisplay.text! + " Sent to RAMBO"
+        var callback_pref: String = userDefaults.stringForKey("callback_preference")!
+        if !callback_pref.isEmpty {
+            configureBtn.hidden = true
+            //adaptiscanBarcode
+            let script = callback_pref + "('" + barcode + "','" + type.description + "')"
+            if let returnedString = webView.stringByEvaluatingJavaScriptFromString(script) {
+                msgDisplay.text = msgDisplay.text! + " Sent to RAMBO"
+            }
         }
+        else {
+            configureBtn.hidden = false
+        }
+        
 
     }
     
@@ -95,30 +106,39 @@ class ViewController: UIViewController, UIWebViewDelegate, NSURLConnectionDelega
     
     func loadSite() {
         var url_pref: String = userDefaults.stringForKey("url_preference")!
-        let ssl_pref: Bool = userDefaults.boolForKey("ssl_preference")
-        if (url_pref.lowercaseString.rangeOfString("http") != nil){
-            if ssl_pref {
-                url_pref = url_pref.stringByReplacingOccurrencesOfString("http://", withString: "https://", options: NSStringCompareOptions.LiteralSearch, range: nil)
+        var callback_pref: String = userDefaults.stringForKey("callback_preference")!
+        if !url_pref.isEmpty && !callback_pref.isEmpty {
+            configureBtn.hidden = true
+            
+            let ssl_pref: Bool = userDefaults.boolForKey("ssl_preference")
+            if (url_pref.lowercaseString.rangeOfString("http") != nil){
+                if ssl_pref {
+                    url_pref = url_pref.stringByReplacingOccurrencesOfString("http://", withString: "https://", options: NSStringCompareOptions.LiteralSearch, range: nil)
+                }
+                else {
+                    url_pref = url_pref.stringByReplacingOccurrencesOfString("https://", withString: "http://", options: NSStringCompareOptions.LiteralSearch, range: nil)
+                }
             }
             else {
-                url_pref = url_pref.stringByReplacingOccurrencesOfString("https://", withString: "http://", options: NSStringCompareOptions.LiteralSearch, range: nil)
+                if ssl_pref {
+                    url_pref = "https://" + url_pref
+                }
+                else {
+                    url_pref = "http://" + url_pref
+                }
             }
+            
+            lastURL = url_pref
+            var url = NSURL(string: lastURL)
+            var request = NSURLRequest(URL:url!)
+            
+            
+            webView.loadRequest(request)
         }
         else {
-            if ssl_pref {
-                url_pref = "https://" + url_pref
-            }
-            else {
-                url_pref = "http://" + url_pref
-            }
+            configureBtn.hidden = false
         }
         
-        lastURL = url_pref
-        var url = NSURL(string: lastURL)
-        var request = NSURLRequest(URL:url!)
-        
-        
-        webView.loadRequest(request)
     }
     
 
@@ -127,6 +147,11 @@ class ViewController: UIViewController, UIWebViewDelegate, NSURLConnectionDelega
     }
     @IBAction func scanButtonDown(sender: AnyObject) {
         scanner.barcodeStopScan(nil)
+    }
+    
+    @IBAction func handleTakeMeButtonPressed(sender: AnyObject) {
+        let settingsUrl = NSURL(string: UIApplicationOpenSettingsURLString)
+        UIApplication.sharedApplication().openURL(settingsUrl!)
     }
     
     deinit {
