@@ -16,6 +16,9 @@ class ViewController: UIViewController, UIWebViewDelegate, NSURLConnectionDelega
     @IBOutlet weak var msgDisplay: UILabel!
     @IBOutlet weak var configureBtn: UIButton!
     
+    var appJavascriptDelegate: AppJavascriptDelegate?
+    var webViewDelegate: WebViewDelegate?
+    
     let userDefaults = NSUserDefaults.standardUserDefaults()
     var lastURL: String = ""
     var refreshControl:UIRefreshControl!
@@ -36,6 +39,8 @@ class ViewController: UIViewController, UIWebViewDelegate, NSURLConnectionDelega
         self.webView.scrollView.backgroundColor = UIColor.clearColor()
         self.webView.backgroundColor = UIColor.clearColor()
         
+        
+        
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "defaultsChanged",
             name: NSUserDefaultsDidChangeNotification, object: nil)
 
@@ -46,6 +51,14 @@ class ViewController: UIViewController, UIWebViewDelegate, NSURLConnectionDelega
         scanner.connect()
 
         
+    }
+    
+    override func loadView() {
+        super.loadView()
+        
+//        appJavascriptDelegate = AppJavascriptDelegate(wv: webView!)
+//        webViewDelegate = WebViewDelegate(delegate: appJavascriptDelegate!)
+//        webView.delegate = webViewDelegate
     }
 
     override func didReceiveMemoryWarning() {
