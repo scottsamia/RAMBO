@@ -118,6 +118,7 @@ class ViewController: UIViewController, UIWebViewDelegate, NSURLConnectionDelega
     }
     
     func loadSite() {
+        
         var url_pref: String = userDefaults.stringForKey("url_preference")!
         var callback_pref: String = userDefaults.stringForKey("callback_preference")!
         if !url_pref.isEmpty && !callback_pref.isEmpty {
