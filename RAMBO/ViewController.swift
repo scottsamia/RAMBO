@@ -118,9 +118,16 @@ class ViewController: UIViewController, UIWebViewDelegate, NSURLConnectionDelega
     }
     
     func loadSite() {
+        var url_pref: String = ""
+        if(userDefaults.objectForKey("url_preference") != nil) {
+            url_pref = userDefaults.stringForKey("url_preference")!
+        }
         
-        var url_pref: String = userDefaults.stringForKey("url_preference")!
-        var callback_pref: String = userDefaults.stringForKey("callback_preference")!
+        var callback_pref: String = ""
+        if(userDefaults.objectForKey("callback_preference") != nil) {
+            callback_pref = userDefaults.stringForKey("callback_preference")!
+        }
+        
         if !url_pref.isEmpty && !callback_pref.isEmpty {
             configureBtn.hidden = true
             
@@ -161,6 +168,8 @@ class ViewController: UIViewController, UIWebViewDelegate, NSURLConnectionDelega
     }
     @IBAction func scanButtonDown(sender: AnyObject) {
         scanner.barcodeStopScan(nil)
+        
+        barcodeData("barcode", type: 128)
     }
     
     @IBAction func handleTakeMeButtonPressed(sender: AnyObject) {
