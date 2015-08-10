@@ -16,12 +16,16 @@ protocol JavascriptObjectDelegate {
 class WebViewDelegate: NSObject, UIWebViewDelegate {
     
     /**
-    *  set window.location to string with a blank will not toggle the following function
+    *  set window.location to string with a blank will not troggle the following function
     */
     var jod: JavascriptObjectDelegate?
+    var aI: UIActivityIndicatorView?
+    var refresh: UIRefreshControl?
     
-    init(delegate: JavascriptObjectDelegate) {
+    init(delegate: JavascriptObjectDelegate, activityIndicator: UIActivityIndicatorView, refreshControl: UIRefreshControl) {
         jod = delegate
+        aI = activityIndicator
+        refresh = refreshControl
     }
     
     func webView(webView: UIWebView, shouldStartLoadWithRequest request: NSURLRequest, navigationType: UIWebViewNavigationType) -> Bool {
@@ -56,5 +60,22 @@ class WebViewDelegate: NSObject, UIWebViewDelegate {
         return true
     }
     
+    func webViewDidStartLoad(webView: UIWebView) {
+        NSLog("Web View Started Loading")
+        if(!aI!.isAnimating() && !refresh!.refreshing) {
+            aI!.startAnimating()
+        }
+    }
+    func webViewDidFinishLoad(webView: UIWebView) {
+        NSLog("Web View Finished Loading")
+        if(aI!.isAnimating()) {
+            aI!.stopAnimating()
+        }
+        refresh!.endRefreshing()
+    }
+    
+    func webView(webView: UIWebView, didFailLoadWithError error: NSError) {
+        NSLog(error.description)
+    }
+    
 }
-

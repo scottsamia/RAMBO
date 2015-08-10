@@ -10,7 +10,7 @@ import Foundation
 import UIKit
 
 class AppJavascriptDelegate: NSObject, JavascriptObjectDelegate {
-    var webView: UIWebView!
+    var webView: UIWebView?
     var foos: Dictionary<String, (callback: String, data :String)->() >?
     
     init(wv: UIWebView) {
@@ -21,17 +21,17 @@ class AppJavascriptDelegate: NSObject, JavascriptObjectDelegate {
             "ping": { (callback: String, data: String) in
                 self.js_callback_helper(callback, data: "pong")
             },
-            "other_foo": { (callback: String, data: String) in
-                
-            },
+            "vendorID": { (callback: String, data: String) in
+                self.js_callback_helper(callback, data: UIDevice.currentDevice().identifierForVendor.UUIDString)
+            }
         ]
     }
     
     // make sure data(string) contains no ' " ' (quote)
     func js_callback_helper(callback: String, data: String) {
-        var exec: String = callback + "('pong')"
-        NSLog("Calling: " + exec)
-        self.webView.stringByEvaluatingJavaScriptFromString(exec)
+        var exec: String = callback + "('" + data + "')"
+        NSLog("JS: " + exec)
+        self.webView!.stringByEvaluatingJavaScriptFromString(exec)
     }
     
     func call(action: String, callback: String, data: String) {

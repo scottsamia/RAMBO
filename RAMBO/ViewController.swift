@@ -28,8 +28,11 @@ class ViewController: UIViewController, UIWebViewDelegate, NSURLConnectionDelega
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
-        webView.delegate = self
+        //webView.delegate = self
         scanner.delegate = self
+        
+        activityIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyle.WhiteLarge
+        activityIndicator.color = UIColor.blackColor()
         
         self.refreshControl = UIRefreshControl()
         self.refreshControl.attributedTitle = NSAttributedString(string: "Pull to refresh")
@@ -39,15 +42,16 @@ class ViewController: UIViewController, UIWebViewDelegate, NSURLConnectionDelega
         self.webView.scrollView.backgroundColor = UIColor.clearColor()
         self.webView.backgroundColor = UIColor.clearColor()
         
-        
+        appJavascriptDelegate = AppJavascriptDelegate(wv: webView!)
+        webViewDelegate = WebViewDelegate(delegate: appJavascriptDelegate!, activityIndicator: activityIndicator!, refreshControl: refreshControl!)
+        webView.delegate = webViewDelegate
         
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "defaultsChanged",
             name: NSUserDefaultsDidChangeNotification, object: nil)
 
-        //lastURL = "https://rambo.rogers-corp.com"
         loadSite()
         
-        println("Web View created")
+        NSLog("Web View created")
         scanner.connect()
 
         
@@ -56,23 +60,12 @@ class ViewController: UIViewController, UIWebViewDelegate, NSURLConnectionDelega
     override func loadView() {
         super.loadView()
         
-//        appJavascriptDelegate = AppJavascriptDelegate(wv: webView!)
-//        webViewDelegate = WebViewDelegate(delegate: appJavascriptDelegate!)
-//        webView.delegate = webViewDelegate
+        
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
-    }
-
-    func webViewDidStartLoad(webView: UIWebView) {
-        println("Web View Started Loading")
-        activityIndicator.startAnimating()
-    }
-    func webViewDidFinishLoad(webView: UIWebView) {
-        println("Web View Finished Loading")
-        activityIndicator.stopAnimating()
     }
     
     func barcodeData(barcode: String!, type: Int32) {
@@ -110,9 +103,14 @@ class ViewController: UIViewController, UIWebViewDelegate, NSURLConnectionDelega
     
     func refresh(sender:UIRefreshControl)
     {
-        webView.reload()
-        sender.endRefreshing()
+        if(!activityIndicator.isAnimating()) {
+            self.webView.reload()
+        }
+        else {
+            refreshControl!.endRefreshing()
+        }
     }
+    
     func defaultsChanged() {
         loadSite()
     }

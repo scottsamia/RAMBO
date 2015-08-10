@@ -15,7 +15,7 @@ class MyURLProtocol: NSURLProtocol {
     var connection: NSURLConnection!
     
     override class func canInitWithRequest(request: NSURLRequest) -> Bool {
-        println("Request #\(requestCount++): URL = \(request.URL!.absoluteString)")
+        NSLog("Request #\(requestCount++): URL = \(request.URL!.absoluteString)")
         
         if NSURLProtocol.propertyForKey("MyURLProtocolHandledKey", inRequest: request) != nil {
             return false
@@ -65,7 +65,7 @@ class MyURLProtocol: NSURLProtocol {
     func connection(connection: NSURLConnection,
         willSendRequestForAuthenticationChallenge challenge: NSURLAuthenticationChallenge) {
             
-            println("WillSendAuthChallenge")
+            NSLog("WillSendAuthChallenge")
             challenge.sender.useCredential(NSURLCredential(forTrust: challenge.protectionSpace.serverTrust), forAuthenticationChallenge: challenge)
     }
 }
