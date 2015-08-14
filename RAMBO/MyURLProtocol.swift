@@ -15,8 +15,9 @@ class MyURLProtocol: NSURLProtocol {
     var connection: NSURLConnection!
     
     override class func canInitWithRequest(request: NSURLRequest) -> Bool {
-        NSLog("Request #\(requestCount++): URL = \(request.URL!.absoluteString)")
-        
+        //NSLog("Request #\(requestCount++): URL = \(request.URL!.absoluteString)")
+        NSLog("Request #\(requestCount++)")
+        NSLog("URL = %@", request.URL!.absoluteString!)
         if NSURLProtocol.propertyForKey("MyURLProtocolHandledKey", inRequest: request) != nil {
             return false
         }
