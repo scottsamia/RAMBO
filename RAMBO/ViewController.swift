@@ -28,6 +28,7 @@ class ViewController: UIViewController, UIWebViewDelegate, NSURLConnectionDelega
     let session         : AVCaptureSession = AVCaptureSession()
     var previewLayer    : AVCaptureVideoPreviewLayer!
     //var highlightView   : UIView = UIView()
+    var timer : NSTimer?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -186,25 +187,18 @@ class ViewController: UIViewController, UIWebViewDelegate, NSURLConnectionDelega
     func startCameraScan() {
         self.view.layer.addSublayer(previewLayer)
         session.startRunning()
-        NSLog("SCANNER IS RUNNING")
+        startTimer()
+        NSLog("CAMERA IS RUNNING")
+    }
+    
+    func stopCameraScan() {
+        previewLayer.removeFromSuperlayer()
+        session.stopRunning()
+        NSLog("CAMERA IS STOPPED")
     }
     
     func initCamera() {
-        
-//        // Allow the view to resize freely
-//        self.highlightView.autoresizingMask =   UIViewAutoresizing.FlexibleTopMargin |
-//            UIViewAutoresizing.FlexibleBottomMargin |
-//            UIViewAutoresizing.FlexibleLeftMargin |
-//            UIViewAutoresizing.FlexibleRightMargin
-//        
-//        // Select the color you want for the completed scan reticle
-//        self.highlightView.layer.borderColor = UIColor.greenColor().CGColor
-//        self.highlightView.layer.borderWidth = 3
-//        
-//        // Add it to our controller's view as a subview.
-//        self.view.addSubview(self.highlightView)
-        
-        
+
         // For the sake of discussion this is the camera
         let device = AVCaptureDevice.defaultDeviceWithMediaType(AVMediaTypeVideo)
         
@@ -234,8 +228,14 @@ class ViewController: UIViewController, UIWebViewDelegate, NSURLConnectionDelega
         previewLayer.frame = self.view.bounds
         previewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill
         
-        
-        
+    }
+    
+    func startTimer() {
+        if timer?.valid != true {
+            timer = NSTimer.scheduledTimerWithTimeInterval(10, target: self, selector: "stopCameraScan", userInfo: nil, repeats: false)
+        } else {
+            timer?.invalidate()
+        }
     }
     
     // This is called when we find a known barcode type with the camera.
@@ -286,7 +286,7 @@ class ViewController: UIViewController, UIWebViewDelegate, NSURLConnectionDelega
         if barcodeString != nil {
             NSLog(barcodeString)
             barcodeData(barcodeString, type: 128)
-            previewLayer.removeFromSuperlayer()
+            stopCameraScan()
         }
         
         //self.highlightView.frame = highlightViewRect

@@ -24,22 +24,23 @@
                                 <rect key="frame" x="150" y="274" width="20" height="20"/>
                             </activityIndicatorView>
                             <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Messages" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GVh-TB-p8N">
-                                <rect key="frame" x="0.0" y="527" width="320" height="21"/>
+                                <rect key="frame" x="0.0" y="509" width="320" height="21"/>
                                 <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" alpha="0.34999999999999964" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7kk-Pp-7eP">
-                                <rect key="frame" x="137" y="489" width="46" height="30"/>
+                                <rect key="frame" x="130" y="528" width="60" height="40"/>
                                 <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="46" id="nuc-Ql-cbG"/>
+                                    <constraint firstAttribute="width" constant="60" id="EZf-Cz-dWl"/>
+                                    <constraint firstAttribute="height" constant="40" id="eG2-HI-0zo"/>
                                 </constraints>
                                 <state key="normal" title="Scan"/>
                                 <userDefinedRuntimeAttributes>
                                     <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
-                                        <integer key="value" value="10"/>
+                                        <integer key="value" value="5"/>
                                     </userDefinedRuntimeAttribute>
                                 </userDefinedRuntimeAttributes>
                                 <connections>
@@ -47,10 +48,10 @@
                                     <action selector="scanButtonUp:" destination="BYZ-38-t0r" eventType="touchUpInside" id="3d2-Px-nFS"/>
                                 </connections>
                             </button>
-                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ORM-9a-EQV">
+                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ORM-9a-EQV">
                                 <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                                 <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
-                                <color key="tintColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                                <color key="tintColor" red="0.93725490196078431" green="0.93725490196078431" blue="0.95686274509803926" alpha="1" colorSpace="calibratedRGB"/>
                                 <state key="normal" title="Configure">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
@@ -61,17 +62,21 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="GVh-TB-p8N" firstAttribute="leading" secondItem="HKq-Xg-Whq" secondAttribute="leading" id="30s-5H-gjQ"/>
-                            <constraint firstAttribute="bottom" secondItem="GVh-TB-p8N" secondAttribute="bottom" constant="20" symbolic="YES" id="5HS-1t-0LN"/>
+                            <constraint firstItem="GVh-TB-p8N" firstAttribute="centerX" secondItem="7kk-Pp-7eP" secondAttribute="centerX" id="3tJ-JG-ZHk"/>
+                            <constraint firstItem="ORM-9a-EQV" firstAttribute="leading" secondItem="GVh-TB-p8N" secondAttribute="leading" id="4or-SI-qry"/>
+                            <constraint firstItem="IHH-sa-EYc" firstAttribute="top" secondItem="GVh-TB-p8N" secondAttribute="bottom" constant="38" id="6Fc-WZ-zOE"/>
                             <constraint firstItem="nKk-ot-cFt" firstAttribute="top" secondItem="HKq-Xg-Whq" secondAttribute="top" id="9KJ-3R-bar"/>
                             <constraint firstAttribute="trailing" secondItem="nKk-ot-cFt" secondAttribute="trailing" id="9jk-81-qyY"/>
-                            <constraint firstItem="GVh-TB-p8N" firstAttribute="centerX" secondItem="7kk-Pp-7eP" secondAttribute="centerX" id="CXy-vu-9KB"/>
-                            <constraint firstItem="GVh-TB-p8N" firstAttribute="trailing" secondItem="nKk-ot-cFt" secondAttribute="trailing" id="GLv-va-YYE"/>
+                            <constraint firstItem="7kk-Pp-7eP" firstAttribute="centerX" secondItem="at9-Ab-eD1" secondAttribute="centerX" id="AaC-mh-Ezf"/>
+                            <constraint firstItem="ORM-9a-EQV" firstAttribute="top" secondItem="nKk-ot-cFt" secondAttribute="top" id="CFx-gd-KXy"/>
+                            <constraint firstItem="GVh-TB-p8N" firstAttribute="leading" secondItem="HKq-Xg-Whq" secondAttribute="leading" id="ID2-rh-GRt"/>
                             <constraint firstItem="nKk-ot-cFt" firstAttribute="centerY" secondItem="at9-Ab-eD1" secondAttribute="centerY" id="PN3-kl-jah"/>
                             <constraint firstItem="nKk-ot-cFt" firstAttribute="bottom" secondItem="IHH-sa-EYc" secondAttribute="top" id="RBy-8A-sbU"/>
-                            <constraint firstItem="7kk-Pp-7eP" firstAttribute="centerX" secondItem="at9-Ab-eD1" secondAttribute="centerX" id="Urn-2e-QNb"/>
-                            <constraint firstItem="nKk-ot-cFt" firstAttribute="leading" secondItem="GVh-TB-p8N" secondAttribute="leading" id="hgb-dY-G3g"/>
-                            <constraint firstItem="GVh-TB-p8N" firstAttribute="top" secondItem="7kk-Pp-7eP" secondAttribute="bottom" constant="8" symbolic="YES" id="ytk-un-hz6"/>
+                            <constraint firstItem="GVh-TB-p8N" firstAttribute="leading" secondItem="nKk-ot-cFt" secondAttribute="leading" id="Swr-WL-Vlw"/>
+                            <constraint firstItem="ORM-9a-EQV" firstAttribute="bottom" secondItem="IHH-sa-EYc" secondAttribute="top" id="chW-oR-oe3"/>
+                            <constraint firstItem="GVh-TB-p8N" firstAttribute="trailing" secondItem="nKk-ot-cFt" secondAttribute="trailing" id="iTS-k9-rmk"/>
+                            <constraint firstItem="7kk-Pp-7eP" firstAttribute="bottom" secondItem="IHH-sa-EYc" secondAttribute="top" id="nTW-my-LRF"/>
+                            <constraint firstItem="ORM-9a-EQV" firstAttribute="trailing" secondItem="GVh-TB-p8N" secondAttribute="trailing" id="vO4-P7-zAE"/>
                         </constraints>
                     </view>
                     <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina4"/>
