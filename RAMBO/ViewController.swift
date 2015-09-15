@@ -13,9 +13,9 @@ import AVFoundation
 class ViewController: UIViewController, UIWebViewDelegate, NSURLConnectionDelegate, DTDeviceDelegate, AVCaptureMetadataOutputObjectsDelegate {
     @IBOutlet weak var webView          : UIWebView!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
-    @IBOutlet weak var addressTxb       : UITextField!
     @IBOutlet weak var msgDisplay       : UILabel!
     @IBOutlet weak var configureBtn     : UIButton!
+    @IBOutlet weak var scanButton       : UIButton!
     
     var appJavascriptDelegate: AppJavascriptDelegate?
     var webViewDelegate: WebViewDelegate?
@@ -66,7 +66,6 @@ class ViewController: UIViewController, UIWebViewDelegate, NSURLConnectionDelega
     override func loadView() {
         super.loadView()
         
-        
     }
 
     override func didReceiveMemoryWarning() {
@@ -80,7 +79,7 @@ class ViewController: UIViewController, UIWebViewDelegate, NSURLConnectionDelega
         if !callback_pref.isEmpty {
             configureBtn.hidden = true
             //adaptiscanBarcode
-            let script = callback_pref + "('" + barcode + "','" + type.description + "')"
+            let script = callback_pref + "('" + barcode + "','" + type.description + "','" + scanner.barcodeType2Text(type) + "')"
             if let returnedString = webView.stringByEvaluatingJavaScriptFromString(script) {
                 msgDisplay.text = msgDisplay.text! + " Sent to RAMBO"
             }
@@ -122,6 +121,13 @@ class ViewController: UIViewController, UIWebViewDelegate, NSURLConnectionDelega
     }
     
     func loadSite() {
+        let cameraScan_Enabled: Bool = userDefaults.boolForKey("cameraScan_enabled")
+        if cameraScan_Enabled {
+            scanButton.hidden = false
+        }
+        else {
+            scanButton.hidden = true
+        }
         var url_pref: String = ""
         if(userDefaults.objectForKey("url_preference") != nil) {
             url_pref = userDefaults.stringForKey("url_preference")!

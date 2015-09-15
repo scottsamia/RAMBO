@@ -16,8 +16,8 @@ class MyURLProtocol: NSURLProtocol {
     
     override class func canInitWithRequest(request: NSURLRequest) -> Bool {
         //NSLog("Request #\(requestCount++): URL = \(request.URL!.absoluteString)")
-        //NSLog("Request #\(requestCount++)")
-        //NSLog("URL = %@", request.URL!.absoluteString!)
+        NSLog("Request #\(requestCount++)")
+        NSLog("URL = %@", request.URL!.absoluteString!)
         if NSURLProtocol.propertyForKey("MyURLProtocolHandledKey", inRequest: request) != nil {
             return false
         }
@@ -49,6 +49,13 @@ class MyURLProtocol: NSURLProtocol {
     
     func connection(connection: NSURLConnection!, didReceiveResponse response: NSURLResponse!) {
         self.client!.URLProtocol(self, didReceiveResponse: response, cacheStoragePolicy: .NotAllowed)
+    }
+    
+    func connection(connection: NSURLConnection, willSendRequest request: NSURLRequest, redirectResponse response:NSURLResponse) -> NSURLRequest {
+            var res = response
+            var req = request
+            return request
+        
     }
     
     func connection(connection: NSURLConnection!, didReceiveData data: NSData!) {

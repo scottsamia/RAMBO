@@ -30,7 +30,7 @@
                                 <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <button opaque="NO" alpha="0.34999999999999964" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7kk-Pp-7eP">
+                            <button hidden="YES" opaque="NO" alpha="0.34999999999999964" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7kk-Pp-7eP">
                                 <rect key="frame" x="130" y="528" width="60" height="40"/>
                                 <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <constraints>
@@ -84,6 +84,7 @@
                         <outlet property="activityIndicator" destination="at9-Ab-eD1" id="lYi-Nf-bkV"/>
                         <outlet property="configureBtn" destination="ORM-9a-EQV" id="p82-re-emQ"/>
                         <outlet property="msgDisplay" destination="GVh-TB-p8N" id="0cD-Dx-wlA"/>
+                        <outlet property="scanButton" destination="7kk-Pp-7eP" id="TD2-pC-AKK"/>
                         <outlet property="webView" destination="nKk-ot-cFt" id="dep-BC-g2g"/>
                     </connections>
                 </viewController>
