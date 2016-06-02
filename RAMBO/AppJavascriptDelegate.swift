@@ -22,14 +22,14 @@ class AppJavascriptDelegate: NSObject, JavascriptObjectDelegate {
                 self.js_callback_helper(callback, data: "pong")
             },
             "vendorID": { (callback: String, data: String) in
-                self.js_callback_helper(callback, data: UIDevice.currentDevice().identifierForVendor.UUIDString)
+                self.js_callback_helper(callback, data: UIDevice.currentDevice().identifierForVendor!.UUIDString)
             }
         ]
     }
     
     // make sure data(string) contains no ' " ' (quote)
     func js_callback_helper(callback: String, data: String) {
-        var exec: String = callback + "('" + data + "')"
+        let exec: String = callback + "('" + data + "')"
         NSLog("JS: " + exec)
         self.webView!.stringByEvaluatingJavaScriptFromString(exec)
     }
@@ -38,7 +38,7 @@ class AppJavascriptDelegate: NSObject, JavascriptObjectDelegate {
         if foos![action] != nil {
             foos![action]! (callback: callback, data: data)
         } else {
-            println("Invalid action: " + action);
+           print("Invalid action: " + action);
         }
     }
 }

@@ -42,7 +42,7 @@ class ViewController: UIViewController, UIWebViewDelegate, NSURLConnectionDelega
         
         self.refreshControl = UIRefreshControl()
         self.refreshControl.attributedTitle = NSAttributedString(string: "Pull to refresh")
-        self.refreshControl.addTarget(self, action: "refresh:", forControlEvents: UIControlEvents.ValueChanged)
+        self.refreshControl.addTarget(self, action: #selector(ViewController.refresh(_:)), forControlEvents: UIControlEvents.ValueChanged)
         self.webView.scrollView.addSubview(refreshControl)
         self.webView.scrollView.contentInset = UIEdgeInsets(top: 20,left: 0,bottom: 0,right: 0)
         self.webView.scrollView.backgroundColor = UIColor.clearColor()
@@ -52,14 +52,18 @@ class ViewController: UIViewController, UIWebViewDelegate, NSURLConnectionDelega
         webViewDelegate = WebViewDelegate(delegate: appJavascriptDelegate!, activityIndicator: activityIndicator!, refreshControl: refreshControl!)
         webView.delegate = webViewDelegate
         
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "defaultsChanged",
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(ViewController.defaultsChanged),
             name: NSUserDefaultsDidChangeNotification, object: nil)
 
         loadSite()
         
         NSLog("Web View created")
         scanner.connect()
-        initCamera()
+        do {
+        //try initCamera()
+        } catch {
+            print(error)
+        }
         
     }
     
@@ -75,12 +79,12 @@ class ViewController: UIViewController, UIWebViewDelegate, NSURLConnectionDelega
     
     func barcodeData(barcode: String!, type: Int32) {
         msgDisplay.text = barcode + " (" + type.description + ")"
-        var callback_pref: String = userDefaults.stringForKey("callback_preference")!
+        let callback_pref: String = userDefaults.stringForKey("callback_preference")!
         if !callback_pref.isEmpty {
             configureBtn.hidden = true
             //adaptiscanBarcode
             let script = callback_pref + "('" + barcode + "','" + type.description + "','" + scanner.barcodeType2Text(type) + "')"
-            if let returnedString = webView.stringByEvaluatingJavaScriptFromString(script) {
+            if let _ = webView.stringByEvaluatingJavaScriptFromString(script) {
                 msgDisplay.text = msgDisplay.text! + " Sent to RAMBO"
             }
         }
@@ -91,15 +95,15 @@ class ViewController: UIViewController, UIWebViewDelegate, NSURLConnectionDelega
 
     }
     
-    func deviceButtonPressed(which: Int32) {
+    func deviceButtonPressed(which:  Int32) {
         msgDisplay.text = "Button " + which.description + " Press"
         
-                switch UInt32(scanner.connstate) {
-                case CONN_CONNECTED.value:
+                switch (Int32(scanner.connstate)) {
+                case CONN_STATES.CONNECTED.rawValue:
                     msgDisplay.text = "Connected"
-                case CONN_CONNECTING.value:
+                case CONN_STATES.CONNECTING.rawValue:
                     msgDisplay.text = "Connecting"
-                case CONN_DISCONNECTED.value:
+                case CONN_STATES.DISCONNECTED.rawValue:
                     msgDisplay.text = "Disconnected"
                 default:
                     msgDisplay.text = ""
@@ -160,8 +164,8 @@ class ViewController: UIViewController, UIWebViewDelegate, NSURLConnectionDelega
             }
             
             lastURL = url_pref
-            var url = NSURL(string: lastURL)
-            var request = NSURLRequest(URL:url!)
+            let url = NSURL(string: lastURL)
+            let request = NSURLRequest(URL:url!)
             
             
             webView.loadRequest(request)
@@ -178,7 +182,7 @@ class ViewController: UIViewController, UIWebViewDelegate, NSURLConnectionDelega
     }
     @IBAction func scanButtonDown(sender: AnyObject) {
         //scanner.barcodeStartScan(nil)
-        startCameraScan()
+        //startCameraScan()
         
     }
     
@@ -203,17 +207,17 @@ class ViewController: UIViewController, UIWebViewDelegate, NSURLConnectionDelega
         NSLog("CAMERA IS STOPPED")
     }
     
-    func initCamera() {
+    func initCamera() throws {
 
         // For the sake of discussion this is the camera
         let device = AVCaptureDevice.defaultDeviceWithMediaType(AVMediaTypeVideo)
         
         // Create a nilable NSError to hand off to the next method.
         // Make sure to use the "var" keyword and not "let"
-        var error : NSError? = nil
+        let error : NSError? = nil
         
         
-        let input : AVCaptureDeviceInput? = AVCaptureDeviceInput.deviceInputWithDevice(device, error: &error) as? AVCaptureDeviceInput
+        let input : AVCaptureDeviceInput? = try AVCaptureDeviceInput(device: device)
         
         // If our input is not nil then add it to the session, otherwise we're kind of done!
         if input != nil {
@@ -230,15 +234,15 @@ class ViewController: UIViewController, UIWebViewDelegate, NSURLConnectionDelega
         output.metadataObjectTypes = output.availableMetadataObjectTypes
         
         
-        previewLayer = AVCaptureVideoPreviewLayer.layerWithSession(session) as! AVCaptureVideoPreviewLayer
-        previewLayer.frame = self.view.bounds
+        previewLayer = AVCaptureVideoPreviewLayer(layer: session) as AVCaptureVideoPreviewLayer
+        //previewLayer.frame = self.view.bounds
         previewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill
         
     }
     
     func startTimer() {
         if timer?.valid != true {
-            timer = NSTimer.scheduledTimerWithTimeInterval(10, target: self, selector: "stopCameraScan", userInfo: nil, repeats: false)
+            timer = NSTimer.scheduledTimerWithTimeInterval(10, target: self, selector: #selector(ViewController.stopCameraScan), userInfo: nil, repeats: false)
         } else {
             timer?.invalidate()
         }

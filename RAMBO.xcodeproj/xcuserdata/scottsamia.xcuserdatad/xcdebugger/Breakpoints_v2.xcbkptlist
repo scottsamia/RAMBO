@@ -6,48 +6,48 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            shouldBeEnabled = "No"
+            shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "RAMBO/ViewController.swift"
-            timestampString = "463982456.170651"
+            timestampString = "486523594.447612"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "274"
-            endingLineNumber = "274"
-            landmarkName = "captureOutput(_:didOutputMetadataObjects:fromConnection:)"
+            startingLineNumber = "213"
+            endingLineNumber = "213"
+            landmarkName = "initCamera()"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            shouldBeEnabled = "No"
+            shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "RAMBO/ViewController.swift"
-            timestampString = "463982456.170651"
+            timestampString = "486527094.190654"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "282"
-            endingLineNumber = "282"
-            landmarkName = "captureOutput(_:didOutputMetadataObjects:fromConnection:)"
+            startingLineNumber = "128"
+            endingLineNumber = "128"
+            landmarkName = "loadSite()"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            shouldBeEnabled = "No"
+            shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "RAMBO/ViewController.swift"
-            timestampString = "463982456.170651"
+            filePath = "RAMBO/MyURLProtocol.swift"
+            timestampString = "486528555.110048"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "250"
-            endingLineNumber = "250"
-            landmarkName = "captureOutput(_:didOutputMetadataObjects:fromConnection:)"
+            startingLineNumber = "45"
+            endingLineNumber = "45"
+            landmarkName = "startLoading()"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>

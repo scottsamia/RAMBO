@@ -1,9 +1,9 @@
-//#define BTLE
+#define BTLE_USED
 
 #import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
 
-#ifdef BTLE
+#ifdef BTLE_USED
 #import <CoreBluetooth/CoreBluetooth.h>
 #endif
 
@@ -53,10 +53,15 @@
 #define iso14ATranscieve iso14Transceive
 #define iso14BTranscieve iso14Transceive
 
+#define emv2LoadConfigurationData emv2LoadContactlessConfiguration
+
+#define prnLoadLogo uiLoadLogo
+
 /**
  * Device type
  */
-typedef enum SUPPORTED_DEVICE_TYPES{
+typedef NS_ENUM(int, SUPPORTED_DEVICE_TYPES)
+{
     /**
      Linea Pro 1,2,3,4,4s, LineaTab
      */
@@ -73,12 +78,75 @@ typedef enum SUPPORTED_DEVICE_TYPES{
      Transport device for connecting to other devices via bluetooth
      */
     DEVICE_TYPE_ISERIAL,
-}SUPPORTED_DEVICE_TYPES;
+    /**
+     Any of the supported zebra printers - DPP-450
+     */
+    DEVICE_TYPE_PRINTER_ZPL,
+};
+
+/**
+ Information about financial card
+ */
+@interface DTFinancialCardInfo : NSObject
+/**
+ Cardholder name or empty if unavailable
+ */
+@property (copy) NSString *cardholderName;
+/**
+ Cardholder first name or empty if unavailable
+ */
+@property (copy) NSString *cardholderFirstName;
+/**
+ Cardholder last name or empty if unavailable
+ */
+@property (copy) NSString *cardholderLastName;
+/**
+ Primary account number
+ */
+@property (copy) NSString *accountNumber;
+/**
+ Service code or empty if unavailable
+ */
+@property (copy) NSString *serviceCode;
+/**
+ Discretionary data or empty if unavailable
+ */
+@property (copy) NSString *discretionaryData;
+/**
+ Expiration date: month
+ */
+@property (assign) int expirationMonth;
+/**
+ Expiration date: year
+ */
+@property (assign) int expirationYear;
+@end
+
+/**
+ * PIN Reading mode
+ */
+typedef NS_ENUM(int, EMV_PIN_ENTRY)
+{
+    /**
+     Automatic, default value - the kernel will ask for pin if the card requires it and the terminal capabilities indicate that pin is supported
+     */
+    PIN_ENTRY_AUTOMATIC=0,
+    /**
+     Always asks for pin entry regardless of the card status
+     */
+    PIN_ENTRY_ENABLED,
+    /**
+     Never asks for pin entry regardless of the card status
+     */
+    PIN_ENTRY_DISABLED,
+};
+
 
 #ifndef STRUCTURES_DEFINED
 #define STRUCTURES_DEFINED
-typedef enum {
-	BAR_ALL=0, 
+typedef NS_ENUM(int, BARCODES)
+{
+	BAR_ALL=0,
 	BAR_UPC,
 	BAR_CODABAR,
 	BAR_CODE25_NI2OF5,
@@ -113,10 +181,11 @@ typedef enum {
 	BAR_QRCODE,
 	BAR_MAXICODE,
 	BAR_LAST
-}BARCODES;
+};
 
-typedef enum {
-	BAR_EX_ALL=0, 
+typedef NS_ENUM(int, BARCODES_EX)
+{
+	BAR_EX_ALL=0,
 	BAR_EX_UPCA,
 	BAR_EX_CODABAR,
 	BAR_EX_CODE25_NI2OF5,
@@ -176,16 +245,17 @@ typedef enum {
 	BAR_EX_CCB,
 	BAR_EX_CCC,
 	BAR_EX_LAST
-}BARCODES_EX;
+};
 
 /**
  * Connection state
  */
-typedef enum {
+typedef NS_ENUM(int, CONN_STATES)
+{
     /**
      Device is disconnected, no automatic connection attempts will be made
      */
-	CONN_DISCONNECTED=0,
+	CONN_DISCONNECTED,
     /**
      The SDK is trying to connect to the device
      */
@@ -194,12 +264,12 @@ typedef enum {
      Device is connected
      */
 	CONN_CONNECTED
-}CONN_STATES;
+};
 
 /**
  * Device connection types
  */
-enum DEVICE_CONNECTION_TYPE
+typedef NS_ENUM(int, DEVICE_CONNECTION_TYPE)
 {
     /**
      Accessory connection, this includes devices connected via the connector on the iOS device and bluetooth devices that use iOS's bluetooth preferences to connect to
@@ -223,7 +293,8 @@ enum DEVICE_CONNECTION_TYPE
 /**
  Filtering bluetooth devices to discover
  */
-typedef enum {
+typedef NS_ENUM(int, BLUETOOTH_FILTER)
+{
     /**
      Include all supported devices (default)
      */
@@ -240,12 +311,13 @@ typedef enum {
      Include supported barcode scanners
      */
 	BLUETOOTH_FILTER_BARCODE_SCANNERS=4,
-}BLUETOOTH_FILTER;
+};
 
 /**
  Barcode scan modes
  */
-typedef enum {
+typedef NS_ENUM(int, SCAN_MODES)
+{
     /**
      The scan will be terminated after successful barcode recognition (default)
      */
@@ -266,12 +338,13 @@ typedef enum {
      Same as multi scan mode, but allowing no duplicate barcodes to be scanned
      */
 	MODE_MULTI_SCAN_NO_DUPLICATES,
-}SCAN_MODES;
+};
 
 /**
  Button modes
  */
-typedef enum {
+typedef NS_ENUM(int, BUTTON_STATES)
+{
     /**
      Button is disabled
      */
@@ -280,12 +353,13 @@ typedef enum {
      Button is enabled (default)
      */
 	BUTTON_ENABLED
-}BUTTON_STATES;
+};
 
 /**
  Card data mode
  */
-typedef enum {
+typedef NS_ENUM(int, MS_MODES)
+{
     /**
      Card data is processed and tracks are extracted (default)
      */
@@ -298,12 +372,62 @@ typedef enum {
      Card data will be returned as processed, but only track 2 will be read
      */
 	MS_PROCESSED_TRACK2_DATA=3,
-}MS_MODES;
+};
+
+/**
+ Trans Armor card reading/encryption modes
+ */
+typedef NS_ENUM(int, TA_MODES)
+{
+    /**
+     Result data contains both T1 and T2 in single RSA packet
+     */
+    TA_MODE_T1T2_COMBINED=0,
+    /**
+     Result data contains single RSA packet, Track1 only
+     */
+    TA_MODE_T1_ONLY,
+    /**
+     Result data contains single RSA packet, Track2 only
+     */
+    TA_MODE_T2_ONLY,
+    /**
+     Result data contains single RSA packet per track
+     */
+    TA_MODE_T1T2_SEPARATE,
+    /**
+     Result data contains single RSA packet, PAN only
+     */
+    TA_MODE_PAN_ONLY,
+};
+
+/**
+ Certificate slots
+ */
+typedef NS_ENUM(int, CERTIFICATE_SLOTS)
+{
+    /**
+     Data root certificate
+     */
+    CERT_SLOT_DATA_ROOT=0,
+    /**
+     Intermediate key certificate, signed with root certificate
+     */
+    CERT_SLOT_DATA_INTERMEDIATE,
+    /**
+     Encryption key certificate, signed with either root certificate or intermediate certificate
+     */
+    CERT_SLOT_DATA_KEY,
+    /**
+     Parameter encryption key certificate
+     */
+    CERT_SLOT_PARAMS,
+};
 
 /**
  EMV Level 2 kernel types
  */
-typedef enum
+typedef NS_ENUM(int, FEAT_EMV2_KERNELS)
 {
     /**
      NecomPlus kernel found in the pinpads
@@ -313,12 +437,40 @@ typedef enum
      Datecs EMV L2 kernel
      */
     EMV_KERNEL_DATECS=2,
-}FEAT_EMV2_KERNELS;
+    /**
+     Datecs EMV L2 Universal kernel, check attached pdf for configuration description
+     */
+    EMV_KERNEL_UNIVERSAL=4,
+};
+
+/**
+ EMV Level 2 kernel types
+ */
+typedef NS_ENUM(int, EMV2_INTERFACES)
+{
+    /**
+     Contact SmartCard interface
+     */
+    EMV_INTERFACE_CONTACT=1,
+    /**
+     Contactless interface
+     */
+    EMV_INTERFACE_CONTACTLESS=2,
+    /**
+     Contact Magnetic Card interface
+     */
+    EMV_INTERFACE_MAGNETIC=4,
+    /**
+     Manual Magnetic Card Entry interface
+     */
+    EMV_INTERFACE_MAGNETIC_MANUAL=8,
+};
 
 /**
  The way to return barcode types
  */
-typedef enum {
+typedef NS_ENUM(int, BARCODE_TYPES)
+{
     /**
      Barcode types are returned from the BAR_* list (default)
      */
@@ -331,12 +483,13 @@ typedef enum {
      Barcode types are returned as ISO 15424 format
      */
     BARCODE_TYPE_ISO15424
-}BT_MODES;
+};
 
 /**
  Firmware update phases
  */
-typedef enum {
+typedef NS_ENUM(int, UPDATE_PHASES)
+{
     /**
      Initializing update
      */
@@ -357,7 +510,7 @@ typedef enum {
      Post-update operations
      */
     UPDATE_COMPLETING
-}UPDATE_PHASES;
+};
 
 /** @defgroup G_MSENCRYPTIONS Magnetic Card Encryption Algorithms
  Supported encryption algorithms for magnetic track data on various devices
@@ -493,7 +646,7 @@ typedef enum {
  - random data (4 bytes)
  - unique ID (4 bytes) - same ID you have sent to the function
  - payload length (2 bytes) - length of the TLV block in BIG ENDIAN
- - card data (variable, ends with 0x00), in format 0xF1 <track1> 0xF2 <track3> 0xF3 <track3> (some tracks might me missing, in this case indentifier is missing too)
+ - card data (variable, ends with 0x00), in format 0xF1 [track1] 0xF2 [track2] 0xF3 [track3] (some tracks might me missing, in this case indentifier is missing too)
  - crc (2 bytes) - CRC16 CCIT on all the bytes before it
  - padding (0-7 bytes) zeroes to pad the packet with
  */
@@ -594,12 +747,27 @@ typedef enum {
  - random data (4 bytes)
  - unique ID (4 bytes) - same ID you have sent to the function
  - payload length (2 bytes) - length of the TLV block in BIG ENDIAN
- - card data (variable, ends with 0x00), in format 0xF1 <track1> 0xF2 <track3> 0xF3 <track3> (some tracks might me missing, in this case indentifier is missing too)
+ - card data (variable, ends with 0x00), in format 0xF1 [track1] 0xF2 [track2] 0xF3 [track3] (some tracks might me missing, in this case indentifier is missing too)
  - crc (2 bytes) - CRC16 CCIT on all the bytes before it
  - padding (0-7 bytes) zeroes to pad the packet with
  - KSN (10 bytes)
  */
 #define ALG_PPAD_DUKPT   10
+
+/**
+ TransArmor packet format consisting of one or more data blocks, each separated with |. Each block contains:
+ Track Identifier(1char)+','+Track data (RSA2048 OEAEP packet in base64)
+ Track indentifiers lower 3 bits contain the tracks present in the block, i.e.:
+ 1 - track1 present
+ 2 - track2 present
+ 3 - both track1 and track2 present
+ 4 - track3 present
+ ...
+ Each RSA block contains:
+ - merchant ID (8 bytes, padded with 0x00)
+ - track data (variable bytes)
+ */
+#define ALG_TRANSARMOR   13
 
 /**@}*/
 
@@ -714,6 +882,11 @@ typedef enum {
  */
 #define CARD_TYPE_SMARTCARD 2
 
+/**
+ Source of the track data is manually entered track
+ */
+#define CARD_TYPE_MANUAL 3
+
 
 #define KEY_TYPE_AES128_ECB 0x04 >> 2
 #define KEY_TYPE_AES128_CBC 0x08 >> 2
@@ -750,7 +923,8 @@ extern const uint8_t KEY_AES256_EMPTY[32];
 /**
  PIN encryption format
  */
-typedef enum {
+typedef NS_ENUM(int, PIN_ENCRYPTION_FORMATS)
+{
     /**
      PIN will be formatted, according to ISO 9564-0
      */
@@ -763,22 +937,24 @@ typedef enum {
      PIN will be formatted, according to ISO 9564-3
      */
 	PIN_FORMAT_ISO3=0x0D,
-}PIN_ENCRYPTION_FORMATS;
+};
 
-typedef enum {
+typedef NS_ENUM(int, ICC_TYPES)
+{
 	TYPE_ICC=0,
 	TYPE_PIN,
-}ICC_TYPES;
+};
 
-typedef enum {
+typedef NS_ENUM(int, RSA_VERIFY_KEY)
+{
 	KEY_ISSUER=0,
 	KEY_ICC,
-}RSA_VERIFY_KEY;
+};
 
 /**
  Smartcard slot types
  */
-typedef enum
+typedef NS_ENUM(int, SC_SLOTS)
 {
     /**
      Main slot, normal smartcard
@@ -788,14 +964,14 @@ typedef enum
      SAM slot
      */
 	SLOT_SAM,
-}SC_SLOTS;
+};
 
 #ifndef RF_STRUCTURES_DEFINED
 #define RF_STRUCTURES_DEFINED
 /**
  RF card types
  */
-typedef enum
+typedef NS_ENUM(int, RF_CARD_TYPES)
 {
     /**
      Unknown card
@@ -861,12 +1037,16 @@ typedef enum
      PicoPass 14443-B
      */
 	CARD_PICOPASS_14443B,
-}RF_CARD_TYPES;
+    /**
+     E-Passport NFC
+     */
+    CARD_EPASSPORT,
+};
 
 /**
  FeliCa SmartTag battery status
  */
-typedef enum
+typedef NS_ENUM(int, FELICA_SMARTTAG_BATERY_STATUSES)
 {
     /**
      Normal, card can be used
@@ -884,12 +1064,12 @@ typedef enum
      Very Low, replace it
      */
     FELICA_SMARTTAG_BATTERY_LOW2,
-}FELICA_SMARTTAG_BATERY_STATUSES;
+};
 
 /**
  FeliCa SmartTag draw mode
  */
-typedef enum
+typedef NS_ENUM(int, FELICA_SMARTTAG_DRAW_MODES)
 {
     /**
      The area outside of the image will be emptied
@@ -907,8 +1087,50 @@ typedef enum
      The area outside of the image will be drawn using one of the previously stored layouts
      */
     FELICA_SMARTTAG_DRAW_USE_LAYOUT
-}FELICA_SMARTTAG_DRAW_MODES;
+};
 
+#endif /*STRUCTURES_DEFINED*/
+
+
+#ifndef DTPrinterInfo_DEFINED
+#define DTPrinterInfo_DEFINED
+/**
+ Information about connected Printer
+ */
+@interface DTPrinterInfo : NSObject
+/**
+ Printer resolution in Dots Per Inch
+ */
+@property (assign) int resolutionDPI;
+/**
+ Current paper width in pixels
+ */
+@property (assign) int paperWidthPx;
+/**
+ Current paper width in inches
+ */
+@property (assign) int paperWidthInch;
+/**
+ Maximum page mode page width in pixels
+ */
+@property (assign) int maxPageModeWidthPx;
+/**
+ Maximum page mode page width in pixels
+ */
+@property (assign) int maxPageModeHeightPx;
+/**
+ Page mode supported
+ */
+@property (assign) BOOL pageModeSupported;
+/**
+ Label mode supported
+ */
+@property (assign) BOOL labelModeSupported;
+/**
+ Label mode active
+ */
+@property (assign) BOOL labelModeActive;
+@end
 #endif
 
 /**
@@ -969,7 +1191,7 @@ extern NSString * const InfoFirmwareRevisionNumber;
 /**
  Different features supported by the device.
  */
-typedef enum
+typedef NS_ENUM(int, FEATURES)
 {
     /**
      Magnetic stripe reader, one of MSR_* constants
@@ -1035,7 +1257,7 @@ typedef enum
      Last feature
      */
     FEAT_MAX
-}FEATURES;
+};
 
 /**
  The feature is not present in the connected device(s)
@@ -1049,7 +1271,7 @@ typedef enum
 /**
  Print protocols
  */
-typedef enum
+typedef NS_ENUM(int, FEAT_PRINT_PROTOCOLS)
 {
     /**
      Exc/pos protocol, prn* commands
@@ -1059,12 +1281,12 @@ typedef enum
      Zebra ZPL protocol, zpl* commands
      */
     PRINT_PROTOCOL_ZPL=2,
-}FEAT_PRINT_PROTOCOLS;
+};
 
 /**
  Magnetic stripe reader types
  */
-typedef enum
+typedef NS_ENUM(int, FEAT_MSRS)
 {
     /**
      Unencrypted magnetic card reader with no possible data encryption
@@ -1086,12 +1308,16 @@ typedef enum
      Emulated encrypted magnetic head, no undencrypted data leaves the head
      */
     MSR_ENCRYPTED_EMUL=16,
-}FEAT_MSRS;
+    /**
+     Trans Armor support
+     */
+    MSR_TRANS_ARMOR=32,
+};
 
 /**
  Barcode module types
  */
-typedef enum
+typedef NS_ENUM(int, FEAT_BARCODES)
 {
     /**
      Opticon barcode engine
@@ -1113,12 +1339,12 @@ typedef enum
      Motorola barcode engine
      */
     BARCODE_MOTOROLA=5,
-}FEAT_BARCODES;
+};
 
 /**
  Bluetooth module types
  */
-typedef enum
+typedef NS_ENUM(int, FEAT_BLUETOOTH_TYPES)
 {
     /**
      Bluetooth module can act as a client to connect to remote devices
@@ -1128,7 +1354,7 @@ typedef enum
      Bluetooth module can accept incoming connections
      */
     BLUETOOTH_HOST=2,
-}FEAT_BLUETOOTHS;
+};
 
 
 /**
@@ -1233,23 +1459,43 @@ typedef enum
  */
 @interface DTEMV2Info : NSObject
 /**
- Version number of the configuration
+ Version number of the contactless configuration
  */
-@property (assign) int configurationVersion;
+@property (assign) int contactlessConfigurationVersion;
+/**
+ Version number of the contact/chip configuration
+ */
+@property (assign) int contactConfigurationVersion;
+/**
+ Version number of the contactless CAPK
+ */
+@property (assign) int contactlessCAPKVersion;
+/**
+ Version number of the contact/chip CAPK
+ */
+@property (assign) int contactCAPKVersion;
+
+
+/**
+ Version number of the contactless configuration
+ @deprecated use contactlessConfigurationVersion instead
+ */
+@property (assign) int configurationVersion DEPRECATED_ATTRIBUTE;
 /**
  Version number of the EMV L2 engine
  */
 @property (assign) int emvKernelVersion;
+
 @end
 
 /**
  Battery information
  */
-enum BatteryChips
+typedef NS_ENUM(int, BATTERY_CHIPS)
 {
     BATTERY_CHIP_NONE=0,
     BATTERY_CHIP_BQ27421,
-}BatteryChips;
+};
 
 /**
  Battery information
@@ -1279,7 +1525,7 @@ enum BatteryChips
 /**
  Battery chip type
  */
-@property (assign) enum BatteryChips batteryChipType;
+@property (assign) BATTERY_CHIPS batteryChipType;
 
 /**
  Extended battery information specific to the chip used
@@ -1300,56 +1546,59 @@ enum BatteryChips
 
 
 // Barcode Printing Types
-/**
- Prints UPC-A barcode
- */
-#define BAR_PRN_UPCA		0
-/**
- Prints UPC-E barcode
- */
-#define BAR_PRN_UPCE		1
-/**
- Prints EAN-13 barcode
- */
-#define BAR_PRN_EAN13		2
-/**
- Prints EAN-8 barcode
- */
-#define BAR_PRN_EAN8		3
-/**
- Prints CODE39 barcode
- */
-#define BAR_PRN_CODE39		4
-/**
- Prints ITF barcode
- */
-#define BAR_PRN_ITF			5
-/**
- Prints CODABAR barcode
- */
-#define BAR_PRN_CODABAR		6
-/**
- Prints CODE93 barcode
- */
-#define BAR_PRN_CODE93		7
-/**
- Prints CODE128 barcode
- */
-#define BAR_PRN_CODE128		8
-/**
- Prints 2D PDF-417 barcode
- */
-#define BAR_PRN_PDF417		9
-/**
- Prints CODE128 optimized barcode. Supported only on DPP-350 and DPP-250 printers, it makes the barcode lot smaller especially when numbers only are used
- */
-#define BAR_PRN_CODE128AUTO	10
-/**
- Prints EAN128 optimized barcode. Supported only on DPP-350 and DPP-250 printers, it makes the barcode lot smaller especially when numbers only are used
- */
-#define BAR_PRN_EAN128AUTO	11
+typedef NS_ENUM(int, BAR_PRN)
+{
+    /**
+     Prints UPC-A barcode
+     */
+    BAR_PRN_UPCA		=0,
+    /**
+     Prints UPC-E barcode
+     */
+    BAR_PRN_UPCE		,
+    /**
+     Prints EAN-13 barcode
+     */
+    BAR_PRN_EAN13		,
+    /**
+     Prints EAN-8 barcode
+     */
+    BAR_PRN_EAN8		,
+    /**
+     Prints CODE39 barcode
+     */
+    BAR_PRN_CODE39		,
+    /**
+     Prints ITF barcode
+     */
+    BAR_PRN_ITF			,
+    /**
+     Prints CODABAR barcode
+     */
+    BAR_PRN_CODABAR		,
+    /**
+     Prints CODE93 barcode
+     */
+    BAR_PRN_CODE93		,
+    /**
+     Prints CODE128 barcode
+     */
+    BAR_PRN_CODE128		,
+    /**
+     Prints 2D PDF-417 barcode
+     */
+    BAR_PRN_PDF417		,
+    /**
+     Prints CODE128 optimized barcode. Supported only on DPP-350 and DPP-250 printers, it makes the barcode lot smaller especially when numbers only are used
+     */
+    BAR_PRN_CODE128AUTO	,
+    /**
+     Prints EAN128 optimized barcode. Supported only on DPP-350 and DPP-250 printers, it makes the barcode lot smaller especially when numbers only are used
+     */
+    BAR_PRN_EAN128AUTO	,
+};
 
-enum PDF417_SIZE
+typedef NS_ENUM(int, PDF417_SIZE)
 {
     PDF417_SIZE_W2_H4=0,
     PDF417_SIZE_W2_H9,
@@ -1369,7 +1618,7 @@ enum PDF417_SIZE
     PDF417_SIZE_W20_H20,
 };
 
-enum PDF417_ECCL
+typedef NS_ENUM(int, PDF417_ECCL)
 {
     PDF417_ECCL_0=0,
     PDF417_ECCL_1,
@@ -1383,15 +1632,15 @@ enum PDF417_ECCL
     PDF417_ECCL_AUTO,
 };
 
-enum QRCODE_ECCL
+typedef NS_ENUM(int, QRCODE_ECCL)
 {
-    QRCODE_ECCL_7=0,
+    QRCODE_ECCL_7=1,
     QRCODE_ECCL_15,
     QRCODE_ECCL_25,
     QRCODE_ECCL_30,
 };
 
-enum QRCODE_SIZE
+typedef NS_ENUM(int, QRCODE_SIZE)
 {
     QRCODE_SIZE_1=1,
     QRCODE_SIZE_4=4,
@@ -1471,7 +1720,7 @@ enum QRCODE_SIZE
 /**
  Animations, that the connected device can play
  */
-typedef enum
+typedef NS_ENUM(int, ANIMATIONS)
 {
     /**
      All animations, used only when stopping them
@@ -1501,12 +1750,13 @@ typedef enum
      Inser magnetic card animation (PPAD1)
      */
 	ANIM_INSERT_MAGNETIC_CARD,
-}ANIMATIONS;
+};
 
 /**
  Languages to be used with some pinpad functions, like the manual magnetic card entry
  */
-typedef enum {
+typedef NS_ENUM(int, LANGUAGES)
+{
     /**
      English
      */
@@ -1539,12 +1789,12 @@ typedef enum {
      Swedish
      */
 	LANG_SWEDISH,
-}LANGUAGES;
+};
 
 /**
  Specific codepages, that can be used with uiDrawText function
  */
-typedef enum
+typedef NS_ENUM(int, CODEPAGES)
 {
     /**
      ISO 8859-1: Western Europe and Americas: Afrikaans, Basque, Catalan, Danish, Dutch, English, Faeroese, Finnish, French, Galician, German, Icelandic, Irish, Italian, Norwegian, Portuguese, Spanish and Swedish.
@@ -1586,12 +1836,12 @@ typedef enum
      ISO 8859-10: Latin6, for Lappish/Nordic/Eskimo languages: Adds the last Inuit (Greenlandic) and Sami (Lappish) letters that were missing in Latin 4 to cover the entire Nordic area.
      */
 	CP_ISO8859_10_LATIN6,
-}CODEPAGES;
+};
 
 /**
  Display fonts
  */
-typedef enum
+typedef NS_ENUM(int, FONTS)
 {
     /**
      6x8 pixels
@@ -1605,7 +1855,7 @@ typedef enum
      4x6 pixels (not all symbols could be displayed using this font, best suited for numbers)
      */
 	FONT_4X6,
-}FONTS;
+};
 
 /**
  Special color that inverts the underlying colors
@@ -1955,6 +2205,10 @@ typedef enum
  * The version of the key
  */
 @property (assign) int keyVersion;
+/**
+ * DUKPT KSN (if any)
+ */
+@property (copy) NSData *dukptKSN;
 
 /**
  * The name of the key (for display purposes)
@@ -2002,11 +2256,11 @@ typedef enum
 /**
  Device type
  */
-@property(assign) enum SUPPORTED_DEVICE_TYPES deviceType;
+@property(assign) SUPPORTED_DEVICE_TYPES deviceType;
 /*
  Device connection type
  */
-@property(assign) enum DEVICE_CONNECTION_TYPE connectionType;
+@property(assign) DEVICE_CONNECTION_TYPE connectionType;
 /**
  Returns connected device name
  **/
@@ -2060,13 +2314,13 @@ typedef enum
 /**
  The way screen can display colors
  */
-typedef enum
+typedef NS_ENUM(int, SCREEN_COLOR_MODES)
 {
     /**
      2 color, black and white (or black and yellow on some screens)
      */
 	COLOR_MODE_BW=0,
-}SCREEN_COLOR_MODES;
+};
 
 /**
  Information about Certification Authority keys
@@ -2182,7 +2436,7 @@ typedef enum
 /**
  Notification sent when barcode is successfuly read. This notification is used when barcode type is set to BARCODE_TYPE_ISO15424
  @param barcode - string containing barcode data
- @param type - barcode type, according to ISO 15424
+ @param isotype - barcode type, according to ISO 15424
  **/
 -(void)barcodeData:(NSString *)barcode isotype:(NSString *)isotype;
 
@@ -2196,7 +2450,7 @@ typedef enum
 /**
  Notification sent when barcode is successfuly read. This notification is used when barcode type is set to BARCODE_TYPE_ISO15424
  @param barcode - string containing barcode data
- @param type - barcode type, according to ISO 15424
+ @param isotype - barcode type, according to ISO 15424
  **/
 -(void)barcodeNSData:(NSData *)barcode isotype:(NSString *)isotype;
 
@@ -2207,6 +2461,15 @@ typedef enum
  @param track3 - data contained in track 3 of the magnetic card or nil
  **/
 -(void)magneticCardData:(NSString *)track1 track2:(NSString *)track2 track3:(NSString *)track3;
+
+/**
+ Notification sent when magnetic card is successfuly read
+ @param track1 - data contained in track 1 of the magnetic card or nil
+ @param track2 - data contained in track 2 of the magnetic card or nil
+ @param track3 - data contained in track 3 of the magnetic card or nil
+ @param source the track data source, one of the CARD_* constants
+ **/
+-(void)magneticCardData:(NSString *)track1 track2:(NSString *)track2 track3:(NSString *)track3 source:(int)source;
 
 /**
  Notification sent when magnetic card is successfuly read. The data is being sent encrypted.
@@ -2290,6 +2553,7 @@ typedef enum
  @param data contains the encrypted card data
  @param track1masked when possible, track1 data will be masked and returned here
  @param track2masked when possible, track2 data will be masked and returned here
+ @param track3 when possible, track3 data will be returned here
  **/
 -(void)magneticCardEncryptedData:(int)encryption tracks:(int)tracks data:(NSData *)data track1masked:(NSString *)track1masked track2masked:(NSString *)track2masked track3:(NSString *)track3;
 
@@ -2335,6 +2599,7 @@ typedef enum
  @param data contains the encrypted card data
  @param track1masked when possible, track1 data will be masked and returned here
  @param track2masked when possible, track2 data will be masked and returned here
+ @param track3 when possible, track3 data will be returned here
  @param source the track data source, one of the CARD_* constants
  **/
 -(void)magneticCardEncryptedData:(int)encryption tracks:(int)tracks data:(NSData *)data track1masked:(NSString *)track1masked track2masked:(NSString *)track2masked track3:(NSString *)track3 source:(int)source;
@@ -2358,6 +2623,12 @@ typedef enum
  @param data - Contains the encrypted raw card data
  **/
 -(void)magneticCardEncryptedRawData:(int)encryption data:(NSData *)data;
+
+/**
+ Notification sent when magnetic card failed to read
+ @param source the track data source, one of the CARD_* constants
+ **/
+-(void)magneticCardReadFailed:(int)source;
 
 /**
  Notification sent when firmware update process advances. Do not call any other functions until firmware update is complete! During the firmware update notifications will be posted.
@@ -2388,7 +2659,6 @@ typedef enum
 /**
  Notification sent when bluetooth device is connected
  @param address bluetooth address of the device
- @param name bluetooth name of the device
  **/
 -(void)bluetoothDeviceConnected:(NSString *)address;
 
@@ -2501,7 +2771,7 @@ typedef enum
  */
 -(void)emv2OnTransactionFinished:(NSData *)data;
 
-#ifdef BTLE
+#ifdef BTLE_USED
 /**
  Notification sent when bluetooth low energy device is connected
  @param device bluetooth low energy device
@@ -2588,6 +2858,17 @@ typedef enum
 
 /**
  Sets the time in seconds, after which Linea will shut down to conserve battery. This works with lightning connector Lineas only (LP5, LPTab4, LPTabMini)
+ @note When Linea is being used by a program, only the idle time is taken in effect, but when Linea is disconnected BOTH parameters have effect - if idle time is 10 seconds and disconnected time is 30, then Linea will awlays disconnect in 10 seconds of inactivity! Thus idle time should always be bigger than disconnected time!
+ @note disconnected timeout only works on firmware <5.60, otherwise it is fixed at 30 seconds. On firmware 5.60+ disconnected one is ignored
+ @param timeIdle this is the idle time, connected or not, after which Linea will turn off. The default value is 5400 seconds (90 minutes)
+ @param timeDisconnected this is the time with no active program connection, after which Linea will turn off. The default value is 30 seconds
+ @param error pointer to NSError object, where error information is stored in case function fails. You can pass nil if you don't want that information
+ @return TRUE if function succeeded, FALSE otherwise
+ */
+-(BOOL)setAutoOffWhenIdle:(NSTimeInterval)timeIdle whenDisconnected:(NSTimeInterval)timeDisconnected error:(NSError **)error;
+
+/**
+ Gets the time in seconds, after which Linea will shut down to conserve battery. This works with lightning connector Lineas only (LP5, LPTab4, LPTabMini)
  @note When Linea is being used by a program, only the idle time is taken in effect, but when Linea is disconnected BOTH parameters have effect - if idle time is 10
  seconds and disconnected time is 30, then Linea will awlays disconnect in 10 seconds of inactivity! Thus idle time should always be bigger than disconnected time!
  @param timeIdle this is the idle time, connected or not, after which Linea will turn off. The default value is 5400 seconds (90 minutes)
@@ -2595,7 +2876,7 @@ typedef enum
  @param error pointer to NSError object, where error information is stored in case function fails. You can pass nil if you don't want that information
  @return TRUE if function succeeded, FALSE otherwise
  */
--(BOOL)setAutoOffWhenIdle:(NSTimeInterval)timeIdle whenDisconnected:(NSTimeInterval)timeDisconnected error:(NSError **)error;
+-(BOOL)getAutoOffWhenIdle:(NSTimeInterval *)timeIdle whenDisconnected:(NSTimeInterval *)timeDisconnected error:(NSError **)error;
 
 /**
  Returns active device's battery capacity
@@ -2636,7 +2917,7 @@ typedef enum
  @param error pointer to NSError object, where error information is stored in case function fails. You can pass nil if you don't want that information
  @return DTDeviceInfo class, cotaining information about the specific device if function succeeded, nil otherwise
  */
--(DTDeviceInfo *)getConnectedDeviceInfo:(enum SUPPORTED_DEVICE_TYPES)deviceType error:(NSError **)error;
+-(DTDeviceInfo *)getConnectedDeviceInfo:(SUPPORTED_DEVICE_TYPES)deviceType error:(NSError **)error;
 
 /**
  Plays a sound using the built-in speaker on the active device
@@ -2647,7 +2928,7 @@ typedef enum
  @param error pointer to NSError object, where error information is stored in case function fails. You can pass nil if you don't want that information
  @return TRUE if function succeeded, FALSE otherwise
  */
--(BOOL)playSound:(int)volume beepData:(int *)data length:(int)length error:(NSError **)error;
+-(BOOL)playSound:(int)volume beepData:(const int *)data length:(int)length error:(NSError **)error;
 
 /**
  Enables or disables kiosk mode. In this mode the device is unable to operate if not on external power. The mode is needed when the iOS needs to be chaged
@@ -2756,12 +3037,22 @@ typedef enum
 -(BOOL)updateFirmwareData:(NSData *)data error:(NSError **)error;
 
 /**
+ Updates connected device's firmware with specified firmware data. The firmware can only be upgraded or downgraded, if you send the same firmware version, then no update process will be started.
+ @note Make sure the user does not interrupt the process or the device will be rendered unusable and can only be recovered via the special firmware update cable
+ @param data the firmware data
+ @param validate true if the function should check for firmware compatibility, false otherwise. It is sometimes useful to disable validation if you want to go from one firmware model to another, when they differ by firmware features only and the hardware is the same (for example going for model with PM to model with AM)
+ @param error pointer to NSError object, where error information is stored in case function fails. You can pass nil if you don't want that information
+ @return TRUE if function succeeded, FALSE otherwise
+ */
+-(BOOL)updateFirmwareData:(NSData *)data validate:(BOOL)validate error:(NSError **)error;
+
+/**
  Returns if a feature is supported on connected device(s) and what type it is
  @param feature one of the FEAT_* constants
  @param error pointer to NSError object, where error information is stored in case function fails. You can pass nil if you don't want that information
  @return FEAT_UNSUPPORTED if feature is not supported, FEAT_SUPPORTED or one or more feature specific types otherwise
  */
--(int)getSupportedFeature:(int)feature error:(NSError **)error;
+-(int)getSupportedFeature:(FEATURES)feature error:(NSError **)error;
 
 -(BOOL)getTimeRemainingToPowerOff:(NSTimeInterval *)timeRemaining error:(NSError **)error;
 
@@ -2779,6 +3070,13 @@ typedef enum
  @return TRUE if function succeeded, FALSE otherwise
  */
 -(BOOL)sysPowerOff:(NSError **)error;
+
+/**
+ Initiates pass-through sync if a usb cable is connected
+ @param error pointer to NSError object, where error information is stored in case function fails. You can pass nil if you don't want that information
+ @return TRUE if function succeeded, FALSE otherwise
+ */
+-(BOOL)sysEnterPassThrough:(NSError **)error;
 /**@}*/
 
 /** @defgroup G_LNMSREADER Magnetic Stripe Reader Functions (Unencrypted)
@@ -2818,6 +3116,14 @@ typedef enum
  </table>
  **/
 -(NSDictionary *)msProcessFinancialCard:(NSString *)track1 track2:(NSString *)track2;
+
+/**
+ Helper function to parse financial card and extract the data - name, number, expiration date. The function will extract as much information as possible.
+ @param track1 - track1 information or nil
+ @param track2 - track2 information or nil
+ @return DTFinancialCardInfo containing extracted data or nil if the data is invalid
+ **/
+-(DTFinancialCardInfo *)msExtractFinancialCard:(NSString *)track1 track2:(NSString *)track2;
 
 /**
  Sets Linea's magnetic card data mode. This setting is not persistent and is best to configure it upon connect.
@@ -2898,7 +3204,7 @@ typedef enum
  @param error pointer to NSError object, where error information is stored in case function fails. You can pass nil if you don't want that information
  @return TRUE if function succeeded, FALSE otherwise
  */
--(BOOL)barcodeSetScanBeep:(BOOL)enabled volume:(int)volume beepData:(int *)data length:(int)length error:(NSError **)error;
+-(BOOL)barcodeSetScanBeep:(BOOL)enabled volume:(int)volume beepData:(const int *)data length:(int)length error:(NSError **)error;
 
 /**
  Returns the current scan mode.
@@ -2907,7 +3213,7 @@ typedef enum
  @param error pointer to NSError object, where error information is stored in case function fails. You can pass nil if you don't want that information
  @return TRUE if function succeeded, FALSE otherwise
  */
--(BOOL)barcodeGetScanMode:(int *)mode error:(NSError **)error;
+-(BOOL)barcodeGetScanMode:(SCAN_MODES *)mode error:(NSError **)error;
 
 /**
  Sets barcode engine scan mode.
@@ -2916,7 +3222,7 @@ typedef enum
  @param error pointer to NSError object, where error information is stored in case function fails. You can pass nil if you don't want that information
  @return TRUE if function succeeded, FALSE otherwise
  */
--(BOOL)barcodeSetScanMode:(int)mode error:(NSError **)error;
+-(BOOL)barcodeSetScanMode:(SCAN_MODES)mode error:(NSError **)error;
 
 /**
  Returns the current barcode type mode. See setBarcodeTypeMode for more detailed description.
@@ -3051,7 +3357,6 @@ typedef enum
 /**
  Performs firmware update on Intermec barcode engines. Barcode update can take very long time, it is best to call this function from a thread and update the user interface when firmwareUpdateProgress delegate is called.
  @warning Interrupting Intermec update WILL brick the engine!
- @param name the exact name of the firmware file
  @param firmwareData firmware file data to load
  @param error pointer to NSError object, where error information is stored in case function fails. You can pass nil if you don't want that information
  @return TRUE if function succeeded, FALSE otherwise
@@ -3083,6 +3388,15 @@ typedef enum
  **/
 -(BOOL)barcodeNewlandSetInitString:(NSString *)data error:(NSError **)error;
 
+/**
+ Performs firmware update on the newland barcode engines. Barcode update can take very long time, it is best to call this function from a thread and update the user interface when firmwareUpdateProgress delegate is called
+ @param firmwareData firmware file data to load
+ @param error pointer to NSError object, where error information is stored in case function fails. You can pass nil if you don't want that information
+ @return TRUE if function succeeded, FALSE otherwise
+ */
+-(BOOL)barcodeNewlandUpdateFirmware:(NSData *)firmwareData error:(NSError **)error;
+
+
 /**@}*/
 
 
@@ -3103,7 +3417,7 @@ typedef enum
  @param error pointer to NSError object, where error information is stored in case function fails. You can pass nil if you don't want that information
  @return TRUE if function succeeded, FALSE otherwise
  */
--(BOOL)btDiscoverSupportedDevicesInBackground:(int)maxDevices maxTime:(double)maxTime filter:(int)filter error:(NSError **)error;
+-(BOOL)btDiscoverSupportedDevicesInBackground:(int)maxDevices maxTime:(double)maxTime filter:(BLUETOOTH_FILTER)filter error:(NSError **)error;
 
 /**
  Performs background discovery of the nearby bluetooth devices. The discovery status and devices found will be sent via delegate notifications
@@ -3240,7 +3554,7 @@ typedef enum
  @param error pointer to NSError object, where error information is stored in case function fails. You can pass nil if you don't want that information
  @return array of strings of bluetooth addresses if function succeeded, nil otherwise
  */
--(NSArray *)btDiscoverDevices:(int)maxDevices maxTime:(double)maxTime codTypes:(int)codTypes error:(NSError **)error;
+-(NSArray *)btDiscoverDevices:(int)maxDevices maxTime:(double)maxTime codTypes:(int)codTypes error:(NSError **)error DEPRECATED_ATTRIBUTE;
 
 /**
  Queries device name given the address. Implemented for compatibility only!
@@ -3250,7 +3564,7 @@ typedef enum
  @param error pointer to NSError object, where error information is stored in case function fails. You can pass nil if you don't want that information
  @return bluetooth device name if function succeeded, nil otherwise
  */
--(NSString *)btGetDeviceName:(NSString *)address error:(NSError **)error;
+-(NSString *)btGetDeviceName:(NSString *)address error:(NSError **)error DEPRECATED_ATTRIBUTE;
 
 /**
  Sets the conditions to fire the NSStreamEventHasBytesAvailable event on bluetooth streams. If all special conditions are disabled, then the notification will be fired the moment data arrives.
@@ -3258,6 +3572,8 @@ typedef enum
  @param maxTime notification will be fired 'maxTime' seconds after the last byte arrives, passing 0 disables it. For example 0.1 means that 100ms after the last byte is received the notification will fire.
  @param maxLength notification will be fired after 'maxLength' data arrives, passing 0 disables it.
  @param sequenceData notification will be fired if the received data contains 'sequenceData', passing nil disables it.
+ @param error pointer to NSError object, where error information is stored in case function fails. You can pass nil if you don't want that information
+ @return TRUE if function succeeded, FALSE otherwise
  */
 -(BOOL)btSetDataNotificationMaxTime:(double)maxTime maxLength:(int)maxLength sequenceData:(NSData *)sequenceData error:(NSError **)error;
 
@@ -3290,8 +3606,7 @@ typedef enum
  */
 -(BOOL)btSetMicGain:(int)gain error:(NSError **)error;
 
-#ifdef BTLE
-//-(BOOL)btleDiscoverSupportedDevices:(int)filter error:(NSError **)error;
+#ifdef BTLE_USED
 -(NSArray *)btleDiscoverSupportedDevices:(int)filter stopOnFound:(BOOL)stopOnFound error:(NSError **)error;
 -(BOOL)btleDiscoverStop;
 -(BOOL)btleConnectToDevice:(CBPeripheral *)aPeripheral error:(NSError **)error;
@@ -3557,6 +3872,7 @@ typedef enum
  - KEY_AUTHENTICATION - if set, you can use authentication functions - cryptoRawAuthenticateDevice
  or cryptoAuthenticateDevice. Firmware updates will require authentication too
  - KEY_ENCRYPTION - if set, magnetic card data will come encrypted via magneticCardEncryptedData or magneticCardEncryptedRawData
+ @param keyID the key type to get version - KEY_AUTHENTICATION or KEY_ENCRYPTION
  @param keyVersion returns key version or 0 if the key is not present (key versions are available in firmware 2.43 or later)
  @param error pointer to NSError object, where error information is stored in case function fails. You can pass nil if you don't want that information
  @return TRUE if function succeeded, FALSE otherwise
@@ -3611,8 +3927,75 @@ typedef enum
  @return TRUE if Linea contains the same authentication key, FALSE otherwise
  */
 -(BOOL)cryptoAuthenticateHost:(NSData *)key error:(NSError **)error;
+
+/**
+ Loads PEM X509 certificate at specified slot
+ @param certificate PEM based X509 certificate
+ @param version certificate version (unused)
+ @param position position to load the certificate to, 0 is the ROOT slot and not replaceable once loaded
+ @param rootPosition the certificate to verify the certificate with. Root certificate is assumed self-signed
+ @param error pointer to NSError object, where error information is stored in case function fails. You can pass nil if you don't want that information
+ @return TRUE if certificate is accepted, FALSE otherwise
+ */
+-(BOOL)cryptoLoadCertificate:(NSString *)certificate version:(int)version position:(int)position rootPosition:(int)rootPosition error:(NSError **)error;
+
 /**@}*/
 
+/*******************************************************************************
+ * TRANS ARMOR COMMANDS
+ *******************************************************************************/
+/** @defgroup G_LTA Trans Armor Functions
+ Functions to work with First Data Trans Armor implementation
+ @{
+ */
+
+/**
+ Sets TransArmor Merchant ID to be used in card data encryption
+ @param merchantID up to 8 bytes of merchant id, if more are sent, they will be truncated
+ @param error pointer to NSError object, where error information is stored in case function fails. You can pass nil if you don't want that information
+ @return TRUE upon success, FALSE otherwise
+ */
+-(BOOL)taSetMerchantID:(NSData *)merchantID error:(NSError **)error;
+
+/**
+ Encrypts data string in TransArmor RSA packet
+ @param data either track1, track2 or pan data to encrypt
+ @param error pointer to NSError object, where error information is stored in case function fails. You can pass nil if you don't want that information
+ @return encrypted data in Base64 format upon success, nil otherwise
+ */
+-(NSString *)taEncryptData:(NSString *)data error:(NSError **)error;
+
+/**
+ Sets what cards to be encrypted, rejected or sent in plain. This data is in format:
+ - B - starts new range of cards to be sent plain
+ - E - ends range
+ - C - starts new range of cards to be rejected
+ - 1-6 numbers - range BIN, it is auto completed with 0 to 6
+ - A - define ending range
+ <br>An examples:
+ - B000000A1111111E - BIN ranges 000000-1111111 will be sent in plain
+ - B100001E - cards starting with 1000001 will be sent in plain
+ - C999999E - cards starting with 999999 will be rejected
+ - C000000A1111111E - BIN ranges 000000-1111111 will be rejected
+ B0A1E - BIN ranges 000000-100000 will be sent in plain
+ <br>BIN ranges can be sent both in ASCII and BCD, BCD takes twice less space allowing for more data.
+ @param data RSA2048 PCKS1.5 encrypted block containing SHA256 of the bin ranges + bin ranges data in ASCII or BCD
+ @param error pointer to NSError object, where error information is stored in case function fails. You can pass nil if you don't want that information
+ @return TRUE if function succeeded, FALSE otherwise
+ */
+-(BOOL)taSetBINRanges:(NSData *)data error:(NSError **)error;
+
+/**
+ Defines how and what tracks will be encrypted. TA wants a single track, so by default this is set to encrypt track2 only. This setting is not persistent, so it is best to set it upon connect
+ @param modeCard encryption mode used for magnetic, contact or contactless transactions, one of the TA_MODES constants
+ @param modeManual encryption mode used for manual entry transactions, one of the TA_MODES constants
+ @param includeSentinels when track data is sent, you can enable or disable track sentinels
+ @param error pointer to NSError object, where error information is stored in case function fails. You can pass nil if you don't want that information
+ @return TRUE if function succeeded, FALSE otherwise
+ */
+-(BOOL)taSetEncryptionModeForCard:(TA_MODES)modeCard forManual:(TA_MODES)modeManual includeSentinels:(BOOL)includeSentinels error:(NSError **)error;
+
+/**@}*/
 
 /*******************************************************************************
  * ENCRYPTED MAGNETIC HEAD COMMANDS
@@ -3720,6 +4103,14 @@ typedef enum
 -(NSData *)emsrGetDUKPTSerial:(NSError **)error;
 
 /**
+ Returns DUKPT serial number (KSN), if DUKPT key is set
+ @param keyID DUKPT key id, one of the KEY_EH_DUKPT_MASTERx constants
+ @param error pointer to NSError object, where error information is stored in case function fails. You can pass nil if you don't want that information
+ @return serial number or nil if an error occured
+ */
+-(NSData *)emsrGetDUKPTSerialForKeyID:(int)keyID error:(NSError **)error;
+
+/**
  Returns head's model
  @return head's model as string
  @param error pointer to NSError object, where error information is stored in case function fails. You can pass nil if you don't want that information
@@ -3789,8 +4180,22 @@ typedef enum
  Fine-tunes which part of the card data will be masked, and which will be sent in clear text for display/print purposes
  @param showExpiration if set to TRUE, expiration date will be shown in clear text, otherwise will be masked
  @param showServiceCode if set to TRUE, service code will be shown in clear text, otherwise will be masked
+ @param showTrack3 if set to TRUE, service code will be shown in clear text, otherwise will be masked
  @param unmaskedDigitsAtStart the number of digits to show in clear text at the start of the PAN, range from 0 to 6 (default is 4)
  @param unmaskedDigitsAtEnd the number of digits to show in clear text at the end of the PAN, range from 0, to 4 (default is 4)
+ @param unmaskedDigitsAfter the number of digits to unmask after the PAN, i.e. 4 will give you the expiration, 7 will give expiration and service code (default is 0)
+ @param error pointer to NSError object, where error information is stored in case function fails. You can pass nil if you don't want that information
+ @return TRUE if function succeeded, FALSE otherwise
+ */
+-(BOOL)emsrConfigMaskedDataShowExpiration:(BOOL)showExpiration showServiceCode:(BOOL)showServiceCode showTrack3:(BOOL)showTrack3 unmaskedDigitsAtStart:(int)unmaskedDigitsAtStart unmaskedDigitsAtEnd:(int)unmaskedDigitsAtEnd unmaskedDigitsAfter:(int)unmaskedDigitsAfter error:(NSError **)error;
+
+/**
+ Fine-tunes which part of the card data will be masked, and which will be sent in clear text for display/print purposes
+ @param showExpiration if set to TRUE, expiration date will be shown in clear text, otherwise will be masked
+ @param showServiceCode if set to TRUE, service code will be shown in clear text, otherwise will be masked
+ @param unmaskedDigitsAtStart the number of digits to show in clear text at the start of the PAN, range from 0 to 6 (default is 4)
+ @param unmaskedDigitsAtEnd the number of digits to show in clear text at the end of the PAN, range from 0, to 4 (default is 4)
+ @param unmaskedDigitsAfter the number of digits to unmask after the PAN, i.e. 4 will give you the expiration, 7 will give expiration and service code (default is 0)
  @param error pointer to NSError object, where error information is stored in case function fails. You can pass nil if you don't want that information
  @return TRUE if function succeeded, FALSE otherwise
  */
@@ -4028,52 +4433,51 @@ typedef enum
  */
 -(BOOL)voltageSetMerchantID:(NSString *)merchantID error:(NSError **)error;
 
-
 /**
  Sets public parameters to be used with ETB genration. After changing public parameters, be sure to call voltageGenerateNewKey function
- @obsolete
+ @deprecated 
  @param publicParameters public parameters block or nil to use the built-in test ones
  @param error pointer to NSError object, where error information is stored in case function fails. You can pass nil if you don't want that information
  @return TRUE if function succeeded, FALSE otherwise
  */
--(BOOL)voltageSetPublicParameters:(NSData *)publicParameters error:(NSError **)error;
+-(BOOL)voltageSetPublicParameters:(NSData *)publicParameters error:(NSError **)error DEPRECATED_ATTRIBUTE;
 
 /**
  Sets identity string to be used with ETB genration. After changing identity string, be sure to call voltageGenerateNewKey function
- @obsolete
+ @deprecated
  @param identityString identity string to be used, pass nil if you want to use the test one
  @param error pointer to NSError object, where error information is stored in case function fails. You can pass nil if you don't want that information
  @return TRUE if function succeeded, FALSE otherwise
  */
--(BOOL)voltageSetIdentityString:(NSString *)identityString error:(NSError **)error;
+-(BOOL)voltageSetIdentityString:(NSString *)identityString error:(NSError **)error DEPRECATED_ATTRIBUTE;
 
 /**
  Sets encryption type
- @obsolete
+ @deprecated
  @param type encryption type - VOLTAGE_ENCRYPTION_FULL or VOLTAGE_ENCRYPTION_SPE
  @param error pointer to NSError object, where error information is stored in case function fails. You can pass nil if you don't want that information
  @return TRUE if function succeeded, FALSE otherwise
  */
--(BOOL)voltageSetEncryptionType:(int)type error:(NSError **)error;
+-(BOOL)voltageSetEncryptionType:(int)type error:(NSError **)error DEPRECATED_ATTRIBUTE;
 
 /**
  Sets settings version
- @obsolete
+ @deprecated
  @param version settings version
  @param error pointer to NSError object, where error information is stored in case function fails. You can pass nil if you don't want that information
  @return TRUE if function succeeded, FALSE otherwise
  */
--(BOOL)voltageSetSettingsVersion:(int)version error:(NSError **)error;
+-(BOOL)voltageSetSettingsVersion:(int)version error:(NSError **)error DEPRECATED_ATTRIBUTE;
 
 /**
  Sets how often a new key will be generated. Generating key is a long process. Currently this function has no effect!
- @obsolete
+ @deprecated
  @param days keys will be regenerated after that number of days, pass 0 to disable that
  @param numberOfTransactions keys will be regenerated after the specified number of transactions, pass 0 to disable that
  @param error pointer to NSError object, where error information is stored in case function fails. You can pass nil if you don't want that information
  @return TRUE if function succeeded, FALSE otherwise
  */
--(BOOL)voltageSetKeyRolloverDays:(int)days numberOfTransactions:(int)numberOfTransactions error:(NSError **)error;
+-(BOOL)voltageSetKeyRolloverDays:(int)days numberOfTransactions:(int)numberOfTransactions error:(NSError **)error DEPRECATED_ATTRIBUTE;
 
 /**@}*/
 
@@ -4356,7 +4760,7 @@ typedef enum
 
 /**
  Executes a raw command on FeliCa card. The IDm(UUID) parameter is automatically added and needs to be skipped.
- @example To read block 0 with service code 0x0900, then you need to send command 06 with data 01 09 00 01 80 00
+ @note To read block 0 with service code 0x0900, then you need to send command 06 with data 01 09 00 01 80 00
  @param cardIndex the index of the card as sent by rfCardDetected delegate call
  @param command command code, refer to FeliCa documentation
  @param data optional data to the command
@@ -4367,7 +4771,7 @@ typedef enum
 
 /**
  Sends raw data to FeliCa card and returns the response. This command does no additional processing and no combining of the packet with the UID as does felicaSendCommand
- @example To read block 0 with service code 0x0900, then you need to send 06 [UID] 01 09 00 01 80 00
+ @note To read block 0 with service code 0x0900, then you need to send 06 [UID] 01 09 00 01 80 00
  @param cardIndex the index of the card as sent by rfCardDetected delegate call
  @param data raw data block, usually consists of COMMAND UID DATA, refer to FeliCa documentation
  @param error pointer to NSError object, where error information is stored in case function fails. You can pass nil if you don't want that information
@@ -4408,7 +4812,6 @@ typedef enum
 /**
  Clears the screen of FeliCa SmartTag
  @param cardIndex the index of the card as sent by rfCardDetected delegate call
- @param status upon successful execution, battery status will be returned here, one of FELICA_SMARTTAG_BATTERY_* constants
  @param error pointer to NSError object, where error information is stored in case function fails. You can pass nil if you don't want that information
  @return TRUE if function succeeded, FALSE otherwise
  */
@@ -4504,7 +4907,7 @@ typedef enum
  @param type file type, refer to desfire documentation
  @param permissions permissions, refer to desfire documentation
  @param size file size, refer to desfire documentation
- @param isoID, optional iso file ID, refer to desfire documentation
+ @param isoID optional iso file ID, refer to desfire documentation
  @param error pointer to NSError object, where error information is stored in case function fails. You can pass nil if you don't want that information
  @return TRUE if function succeeded, FALSE otherwise
  */
@@ -4638,7 +5041,7 @@ typedef enum
  @param startY - Y coordinate in characters from the top of the defined window where the PIN entry prompt will be drawn
  @param timeout - timeout in seconds waiting for the user to enter the pin (10-180)
  @param echoChar - symbol used to mark the pin digits, allowed are '*', '+' or '-'
- @param message - text to be displayed to the user. You can use <CR> to move the cursor to the next line.
+ @param message - text to be displayed to the user. You can use [CR] to move the cursor to the next line.
  @param error returns error information, you can pass nil if you don't want it
  @return TRUE if function succeeded, FALSE otherwise
  **/
@@ -4652,7 +5055,7 @@ typedef enum
  @param startY - Y coordinate in characters from the top of the defined window where the PIN entry prompt will be drawn
  @param timeout - timeout in seconds waiting for the user to enter the pin (10-180)
  @param echoChar - symbol used to mark the pin digits, allowed are '*', '+' or '-'
- @param message - text to be displayed to the user. You can use <CR> to move the cursor to the next line.
+ @param message - text to be displayed to the user. You can use [CR] to move the cursor to the next line.
  @param error returns error information, you can pass nil if you don't want it
  @return TRUE if function succeeded, FALSE otherwise
  **/
@@ -4670,7 +5073,6 @@ typedef enum
  Initiates synchronous magnetic card entry procedure. The magnetic card data is stored encrypted and protected inside the pinpad.
  After successful operation card data is sent like any other card read operation - via magneticCardEncryptedData with the encryption selected via emsrSetEncryption. This function is blocking and can take up to timeout seconds, so make sure to call it on a thread or dispatch_async
  @param language - the language to display promt on, one of the LANG_* constants
- @param startY - Y coordinate in characters from the top of the defined window where the PIN entry prompt will be drawn
  @param timeout - timeout in seconds waiting for the user to enter the card data (10-180)
  @param error returns error information, you can pass nil if you don't want it
  @return TRUE if function succeeded, FALSE otherwise
@@ -4734,6 +5136,7 @@ typedef enum
  @param usage the key usage (type of key) attributes. See the KEY_USAGE_* constant field values.
  @param version the key version. Not used if key usage is KEY_USAGE_DUKPT
  @param data the 16 or 26 byte of input data to be processed. The first 16 bytes must contains encrypted key and next 10 bytes (if presents) are key serial number.
+ @param cbc set to TRUE if the data was generated using CBC, FALSE if ECB
  @param error returns error information, you can pass nil if you don't want it
  @return key check value upon success, nil otherwise
  **/
@@ -4838,8 +5241,8 @@ typedef enum
  @return TRUE if function succeeded, FALSE otherwise
  **/
 -(BOOL)ppadReadKey:(char *)key error:(NSError **)error;
-/**@}*/
 
+/**@}*/
 
 /** @defgroup G_PPCA Certification Authority Functions
  This section includes functions for managing CA keys
@@ -4929,6 +5332,10 @@ typedef enum
  */
 #define EMV_RESULT_TRY_ANOTHER_INTERFACE 0x0100
 /**
+ EMV Transaction result: Try again
+ */
+#define EMV_RESULT_TRY_AGAIN 0x1000
+/**
  EMV Transaction result: The card cannot be processed due to configuration error in the kernel
  */
 #define EMV_RESULT_END_APPLICATION 0x0000
@@ -4949,6 +5356,10 @@ typedef enum
  CVM result: No CVM was performed
  */
 #define EMV_CVM_NO_CVM 0x04
+/**
+ CVM result: Offline PIN was entered
+ */
+#define EMV_CVM_OFFLINE_PIN 0x08
 
 /**
  EMV Kernel status: not ready
@@ -5052,6 +5463,26 @@ typedef enum
  */
 #define EMV_UI_PRESENT_CARD_AGAIN 0x0021
 /**
+ EMV UI: select application
+ */
+#define EMV_UI_SELECT_APPLICAITON 0x8001
+/**
+ EMV UI: manual selection in progress
+ */
+#define EMV_UI_MANUAL_ENTRY 0x8002
+/**
+ EMV UI: enter pin prompt
+ */
+#define EMV_UI_PROMPT_ENTER_PIN   0x8003
+/**
+ EMV UI: wrong pin prompt
+ */
+#define EMV_UI_PROMPT_WRONG_PIN                0x8004
+/**
+ EMV UI: pin last attempt propmpt
+ */
+#define EMV_UI_PROMPT_PIN_LAST_ATTEMPT    0x8005
+/**
  EMV UI: N/A
  */
 #define EMV_UI_NA 0x00FF
@@ -5074,6 +5505,7 @@ typedef enum
  Activates magnetic card emulation mode for the EMV. In this mode when a card is read, it will be encrypted by it and sent via magneticCardEncryptedData delegate.
  You still need to start the emv transaction, but providing emv2OnOnlineProcessing function or emv2OnTransactionFinished is not needed.
  The emv2Deinitialise will be automatically called once the track data is dispatched.
+ @param enabled activates or deactivates card emulation mode
  @param encryption encryption algorhtm used, one of the ALG_* constants
  @param keyID key identifier, one of the KEY_* constants
  @param error pointer to NSError object, where error information is stored in case function fails. You can pass nil if you don't want that information
@@ -5081,12 +5513,37 @@ typedef enum
  */
 -(BOOL)emv2SetCardEmulationMode:(BOOL)enabled encryption:(int)encryption keyID:(int)keyID error:(NSError **)error;
 /**
- Loads EMV kernel configuration data. Configuration consists of custom tags setting various terminal capabilities and specific application parameters
- @param data TLV list of configuration tags. If the configuration is loaded for the first time, or there is no configuration encryption key tag set, then it is possible to load it in plain
+ Loads EMV kernel contactless configuration data. Configuration consists of custom tags setting various terminal capabilities and specific application parameters. Check attached pdf document for the specific tags used
+ @param configuration TLV list of configuration tags. If the configuration is loaded for the first time, or there is no configuration encryption key tag set, then it is possible to load it in plain
  @param error pointer to NSError object, where error information is stored in case function fails. You can pass nil if you don't want that information
  @return TRUE if function succeeded, FALSE otherwise
  */
--(BOOL)emv2LoadConfigurationData:(NSData *)data error:(NSError **)error;
+-(BOOL)emv2LoadContactlessConfiguration:(NSData *)configuration error:(NSError **)error;
+/**
+ Loads EMV kernel contact/chip configuration data. Configuration consists of custom tags setting various terminal capabilities and specific application parameters. Check attached pdf document for the specific tags used
+ @param configuration TLV list of configuration tags. If the configuration is loaded for the first time, or there is no configuration encryption key tag set, then it is possible to load it in plain
+ @param error pointer to NSError object, where error information is stored in case function fails. You can pass nil if you don't want that information
+ @return TRUE if function succeeded, FALSE otherwise
+ */
+-(BOOL)emv2LoadContactConfiguration:(NSData *)configuration error:(NSError **)error;
+/**
+ Loads EMV kernel contactess Certification Authority Public Keys
+ @param capk TLV list of configuration tags containing public keys parameters.
+ @param error pointer to NSError object, where error information is stored in case function fails. You can pass nil if you don't want that information
+ @return TRUE if function succeeded, FALSE otherwise
+ */
+-(BOOL)emv2LoadContactlessCAPK:(NSData *)capk error:(NSError **)error
+;
+/**
+ Loads EMV kernel contact/chip Certification Authority Public Keys
+ @param capk TLV list of configuration tags containing public keys parameters.
+ @param error pointer to NSError object, where error information is stored in case function fails. You can pass nil if you don't want that information
+ @return TRUE if function succeeded, FALSE otherwise
+ */
+-(BOOL)emv2LoadContactCAPK:(NSData *)capk error:(NSError **)error
+;
+-(BOOL)emv2LoadGenericConfiguration:(NSData *)configuration error:(NSError **)error;
+
 /**
  Returns information about loaded configuration
  @param error pointer to NSError object, where error information is stored in case function fails. You can pass nil if you don't want that information
@@ -5095,13 +5552,23 @@ typedef enum
 -(DTEMV2Info *)emv2GetInfo:(NSError **)error;
 /**
  Sets EMV transaction parameters, this function must be called before starting EMV transaction
- @param transaction type, tag 9C, the value depends on the payment institution, use 00 if you are unsure
+ @param type transaction type, tag 9C, the value depends on the payment institution, use 00 if you are unsure
  @param amount transaction amount as integer, i.e. for USD, $12.50 will be sent as 1250
  @param currencyCode currency code, according to ISO 4217
  @param error pointer to NSError object, where error information is stored in case function fails. You can pass nil if you don't want that information
  @return TRUE if function succeeded, FALSE otherwise
  */
 -(BOOL)emv2SetTransactionType:(int)type amount:(int)amount currencyCode:(int)currencyCode error:(NSError **)error;
+/**
+ Starts EMV transaction. The function waits for payment card to be available, then processes it and notifies of completion. You can cancel the transaction at any time.
+ @param interfaces transaction interface like contactless/contact or magnetic. One of hte EMV_INTERFACE_* constants, only works on universal EMV kernel
+ @param flags controls the EMV transaction, use 0 for now
+ @param initData optional TLV structure with additional parameters to be sent to the kernel
+ @param error pointer to NSError object, where error information is stored in case function fails. You can pass nil if you don't want that information
+ @param timeout transaction timeout in seconds, only works on universal EMV kernel
+ @return TRUE if function succeeded, FALSE otherwise
+ */
+-(BOOL)emv2StartTransactionOnInterface:(int)interfaces flags:(int)flags initData:(NSData *)initData timeout:(NSTimeInterval)timeout error:(NSError **)error;
 /**
  Starts EMV transaction. The function waits for payment card to be available, then processes it and notifies of completion. You can cancel the transaction at any time.
  @param flags controls the EMV transaction, use 0 for now
@@ -5138,12 +5605,25 @@ typedef enum
  @return TRUE if function succeeded, FALSE otherwise
  */
 -(NSData *)emv2GetCardTracksEncryptedWithFormat:(int)format keyID:(int)keyID error:(NSError **)error;
+
+/**
+ After transaction is finished, you can get the card data in magnetic-stripe format by using one of the available Encrypted Head formats
+ @param format encryption algorhtm used, one of the ALG_* constants
+ @param keyID key ID, one of KEY_* constants. Passing 0 will use the default key for the specified algorith
+ @param additionalData a dictionary object containing algorithm specific values. Currently supported:<br>
+ - @"RandomNumber" an NSInteger containing random number, that is going to be sent back in the packet in case of ALG_PPAD_DUKPT encryption format. If not specified, the command will generate one.
+ @param error pointer to NSError object, where error information is stored in case function fails. You can pass nil if you don't want that information
+ @return TRUE if function succeeded, FALSE otherwise
+ */
+-(NSData *)emv2GetCardTracksEncryptedWithFormat:(int)format keyID:(int)keyID additionalData:(NSDictionary *)additionalData error:(NSError **)error;
+
 /**
  At online processing or transaction complete phase, you can get the tags, encrypted and in a specified format. This function can be used to get the tags, that are unavailable as plain, such as PAN, track data
  @param tagList a list of tags to get. The format is like TLV list without length and value, i.e. every tag takes as many bytes as needed
  @param format one of the TAGS_FORMAT_* constants
  @param keyType key type, one of KEY_TYPE_* constants
  @param keyIndex the index of the key to use, in case there are multiple keys of the same type
+ @param packetID an user-defined packet ID that will be returned back in encrypted packet
  @param error pointer to NSError object, where error information is stored in case function fails. You can pass nil if you don't want that information
  @return encrypted packet if function succeeded, nil otherwise
  */
@@ -5156,6 +5636,43 @@ typedef enum
  */
 -(NSData *)emv2GetTagsPlain:(NSData *)tagList error:(NSError **)error;
 
+/**
+ Sets various options fort the pin entry portion of the EMV transaction
+ @param pinEntry controls if you will be asked for pin during the transaction, one of the PIN_ENTRY_* constants. Defaults to automatic, based on the card
+ @param error pointer to NSError object, where error information is stored in case function fails. You can pass nil if you don't want that information
+ @return TRUE if function succeeded, FALSE otherwise
+ */
+-(BOOL)emv2SetPINOptions:(EMV_PIN_ENTRY)pinEntry error:(NSError **)error;
+
+/**
+ Sets various options to be used for manual card entry part of the transaction
+ @param enableCVV enables or disables CVV entry
+ @param enableExpiration enables or disables card expiration entry
+ @param error pointer to NSError object, where error information is stored in case function fails. You can pass nil if you don't want that information
+ @return TRUE if function succeeded, FALSE otherwise
+ */
+-(BOOL)emv2SetManualEntryOptionsEnableCVV:(bool)enableCVV enableExpiration:(bool)enableExpiration error:(NSError **)error;
+
+/**
+ Allows temporal changing of the messages used in the universal EMV engine. You can disable each message by sending nil for text. Use this function before starting transaction, the messages are valid for the next transaction only
+ @param messageID one of the message constants, EMV_UI_*
+ @param font the font used, one of the FONT_* constants
+ @param message the message text to be displayed
+ @param error pointer to NSError object, where error information is stored in case function fails. You can pass nil if you don't want that information
+ @return TRUE if function succeeded, FALSE otherwise
+ */
+-(BOOL)emv2SetMessageForID:(int)messageID font:(int)font message:(NSString *)message error:(NSError **)error;
+;
+
+/**
+ Performs complete EMV transaction but returns magnetic card data as if card was swiped. The result goes to either magneticCardData(if plain), magneticCardEncryptedData(encrypted) or magneticCardReadFailed if operation failed. The function waits for payment card to be available, then processes it and notifies of completion. You can cancel the transaction at any time. The algorithm used to encrypt the card data and the key are set via emsrSetEncryption function
+ @param interfaces transaction interface like contactless/contact or magnetic. One of hte EMV_INTERFACE_* constants, only works on universal EMV kernel
+ @param initData optional TLV structure with additional parameters to be sent to the kernel
+ @param timeout transaction timeout in seconds, only works on universal EMV kernel
+ @param error pointer to NSError object, where error information is stored in case function fails. You can pass nil if you don't want that information
+ @return TRUE if function succeeded, FALSE otherwise
+ */
+-(BOOL)emv2StartMagneticEmulationTransactionOnInterface:(int)interfaces initData:(NSData *)initData timeout:(NSTimeInterval)timeout error:(NSError **)error;
 /**@}*/
 
 
@@ -5353,45 +5870,52 @@ typedef enum
 #define TSI_TERMINAL_RISK_DONE 0x0104
 #define TSI_SCRIPT_PROCESS_DONE 0x0103
 
-typedef enum {
+typedef NS_ENUM(int, APP_SELECTION_METHODS)
+{
 	SELECTION_PSE=0,
 	SELECTION_AIDLIST,
-}APP_SELECTION_METHODS;
+};
 
-typedef enum {
+typedef NS_ENUM(int, APP_MATCH_CRITERIAS)
+{
 	MATCH_FULL=1,
 	MATCH_PARTIAL_VISA,
 	MATCH_PARTIAL_EUROPAY,
-}APP_MATCH_CRITERIAS;
+};
 
-typedef enum {
+typedef NS_ENUM(int, AUTH_RESULTS)
+{
     AUTH_RESULT_SUCCESS=1,
     AUTH_RESULT_FAILURE,
     AUTH_FAIL_PIN_ENTRY_NOT_DONE,
     AUTH_FAIL_USER_CANCELLATION,
-}AUTH_RESULTS;
+};
 
-typedef enum {
+typedef NS_ENUM(int, BYPASS_MODES)
+{
     BYPASS_CURRENT_METHOD_MODE=0,
     BYPASS_ALL_METHODS_MODE,
-}BYPASS_MODES;
+};
 
-typedef enum {
+typedef NS_ENUM(int, CERTIFICATE_AC_TYPES)
+{
     CERTIFICATE_AAC=0,
     CERTIFICATE_TC,
     CERTIFICATE_ARQC,
-}CERTIFICATE_AC_TYPES;
+};
 
-typedef enum {
+typedef NS_ENUM(int, CARD_RISK_TYPES)
+{
     CDOL_1=1,
     CDOL_2,
-}CARD_RISK_TYPES;
+};
 
-typedef enum {
+typedef NS_ENUM(int, TAG_TYPES)
+{
     TAG_TYPE_BINARY=0,
     TAG_TYPE_BCD,
     TAG_TYPE_STRING,
-}TAG_TYPES;
+};
 
 /** @defgroup G_PPEMV_TAGS EMV TAGs
  @ingroup G_PPEMV
@@ -7098,6 +7622,7 @@ typedef enum {
  @note Upon successful execution, EMV kernel status is stored in emvLastStatus property.
  @param tagList list of tags to read, the list follows the BER_TLV structure without having length and value, tags can be single or 2bytes
  @param keyID index of the key to use (1-49)
+ @param uniqueID a 4 bytes of unique ID that will be returned back in the packet
  @param error returns error information, you can pass nil if you don't want it
  @return encrypted packet or nil if function failed. After decryption the data contains:
  - random data (4 bytes)
@@ -7114,6 +7639,7 @@ typedef enum {
  @note Upon successful execution, EMV kernel status is stored in emvLastStatus property.
  @param tagList list of tags to read, the list follows the BER_TLV structure without having length and value, tags can be single or 2bytes
  @param keyID index of the DUKPT key to use (0-1). If the keyID is set to 0xFF, then the last DUKPT data key generated is used
+ @param uniqueID a 4 bytes of unique ID that will be returned back in the packet
  @param error returns error information, you can pass nil if you don't want it
  @return encrypted packet + DUKPT KSN (10 bytes) or nil if function failed. After decryption the data contains:
  - random data (4 bytes)
@@ -7139,7 +7665,7 @@ typedef enum {
  Returns screen properties
  @param width screen width in pixels will be returned here
  @param height screen height in pixels will be returned here
- @param color screen capability to display colors will be returned here, one of the COLOR_MODE_* constants
+ @param colorMode screen capability to display colors will be returned here, one of the SCREEN_COLOR_MODES constants
  @param error returns error information, you can pass nil if you don't want it
  @return TRUE if function succeeded, FALSE otherwise
  **/
@@ -7288,6 +7814,14 @@ typedef enum {
  */
 -(BOOL)uiIsSpeakerAutoControlEnabled:(BOOL *)enabled error:(NSError **)error;
 
+/**
+ Loads logo into device's memory. Supported by printers and pinpads only. The logo is persistent and can be deleted only if battery is removed
+ @param logo logo bitmap data
+ @param align logo alignment, one of the ALIGN_* constants
+ @param error returns error information, you can pass nil if you don't want it
+ @return TRUE upon success, FALSE otherwise
+ */
+-(BOOL)uiLoadLogo:(UIImage *)logo align:(int)align error:(NSError **)error;
 
 /**
  Contains display width in pixels
@@ -7322,6 +7856,12 @@ typedef enum {
 
 #define CHANNEL_ZPL			50
 
+/**
+ Returns information about the connected printer
+ @param error returns error information, you can pass nil if you don't want it
+ @return printer information object or nil if error occured
+ */
+-(DTPrinterInfo *)prnGetPrinterInfo:(NSError **)error;
 /**
  Forces data still in the sdk buffers to be sent directly to the printer
  @param error returns error information, you can pass nil if you don't want it
@@ -7392,49 +7932,53 @@ typedef enum {
  @param error returns error information, you can pass nil if you don't want it
  @return TRUE upon success, FALSE otherwise
  */
--(BOOL)prnPrintBarcode:(int)bartype barcode:(NSData *)barcode error:(NSError **)error;
+-(BOOL)prnPrintBarcode:(BAR_PRN)bartype barcode:(NSData *)barcode error:(NSError **)error;
 /**
- * Prints PDF-417 barcode
- * @param truncated PDF-417 type - standard or truncated
- * @param autoEncoding encoding type - either automatic or binary
- * @param eccl Error correction control level. Possible values 0 to 9. ECCL=9 automatically selects correction level dependent on data length.
- * @param size barcode size, one of
- * <ul>
- * <li>0 - Width=2, Height=4
- * <li>1 - Width=2, Height=9
- * <li>2 - Width=2, Height=15
- * <li>3 - Width=2, Height=20
- * <li>4 - Width=7, Height=4
- * <li>5 - Width=7, Height=9
- * <li>6 - Width=7, Height=15
- * <li>7 - Width=7, Height=20
- * <li>8 - Width=12, Height=4
- * <li>9 - Width=12, Height=9
- * <li>10 - Width=12, Height=15
- * <li>11 - Width=12, Height=20
- * <li>12 - Width=20, Height=4
- * <li>13 - Width=20, Height=9
- * <li>14 - Width=20, Height=15
- * <li>15 - Width=20, Height=20
- * </ul><p>
- * @param barcode barcode data to be printed
+ Prints PDF-417 barcode
+ @param truncated PDF-417 type - standard or truncated
+ @param autoEncoding encoding type - either automatic or binary
+ @param eccl Error correction control level. Possible values 0 to 9. ECCL=9 automatically selects correction level dependent on data length.
+ @param size barcode size, one of
+ <ul>
+ <li>0 - Width=2, Height=4
+ <li>1 - Width=2, Height=9
+ <li>2 - Width=2, Height=15
+ <li>3 - Width=2, Height=20
+ <li>4 - Width=7, Height=4
+ <li>5 - Width=7, Height=9
+ <li>6 - Width=7, Height=15
+ <li>7 - Width=7, Height=20
+ <li>8 - Width=12, Height=4
+ <li>9 - Width=12, Height=9
+ <li>10 - Width=12, Height=15
+ <li>11 - Width=12, Height=20
+ <li>12 - Width=20, Height=4
+ <li>13 - Width=20, Height=9
+ <li>14 - Width=20, Height=15
+ <li>15 - Width=20, Height=20
+ </ul><p>
+ @param barcode barcode data to be printed
+ @param error returns error information, you can pass nil if you don't want it
+ @return TRUE upon success, FALSE otherwise
  */
--(BOOL)prnPrintBarcodePDF417:(NSData *)barcode truncated:(BOOL)truncated autoEncoding:(BOOL)autoEncoding eccl:(enum PDF417_ECCL)eccl size:(enum PDF417_SIZE)size error:(NSError **)error;
+-(BOOL)prnPrintBarcodePDF417:(NSData *)barcode truncated:(BOOL)truncated autoEncoding:(BOOL)autoEncoding eccl:(PDF417_ECCL)eccl size:(PDF417_SIZE)size error:(NSError **)error;
 /**
- * Prints QR CODE barcode
- * @param size barcode symbol size. Possible values: 1, 4, 6, 8, 10, 12, 14
- * @param eccl Error correction control level, one of
- * <ul>
- * <li>1 - 7%
- * <li>2 - 15%
- * <li>3 - 25%
- * <li>4 - 30%
- * </ul><p>
- * @param barcode barcode data to be printed
+ Prints QR CODE barcode
+ @param size barcode symbol size. Possible values: 1, 4, 6, 8, 10, 12, 14
+ @param eccl Error correction control level, one of
+ <ul>
+ <li>1 - 7%
+ <li>2 - 15%
+ <li>3 - 25%
+ <li>4 - 30%
+ </ul><p>
+ @param barcode barcode data to be printed
+ @param error returns error information, you can pass nil if you don't want it
+ @return TRUE upon success, FALSE otherwise
  */
--(BOOL)prnPrintBarcodeQRCode:(NSData *)barcode eccl:(enum QRCODE_ECCL)eccl size:(enum QRCODE_SIZE)size error:(NSError **)error;
+-(BOOL)prnPrintBarcodeQRCode:(NSData *)barcode eccl:(QRCODE_ECCL)eccl size:(QRCODE_SIZE)size error:(NSError **)error;
 /**
- Prints the stored logo. You can upload log with {@link #loadLogo:(NSData *)logo} function
+ Prints the stored logo. You can upload log with prnLoadLogo function
  @param mode logo mode, one of the LOGO_* constants
  @param error returns error information, you can pass nil if you don't want it
  @return TRUE upon success, FALSE otherwise
@@ -7596,7 +8140,8 @@ typedef enum {
  Sets blackmark sensor treshold or UnsupportedOperationException if printer is not in blackmark mode.
  This value tells the printer how dark a spot on the paper needs to be in order to be considered as blackmark.
  @param treshold value between 0x20 and 0xc0, default is 0x68
- @throw NSPortTimeoutException if there is no connection to the printer
+ @param error returns error information, you can pass nil if you don't want it
+ @return TRUE upon success, FALSE otherwise
  */
 -(BOOL)prnSetBlackMarkTreshold:(int)treshold error:(NSError **)error;
 /**
@@ -7609,14 +8154,6 @@ typedef enum {
  @return TRUE upon success, FALSE otherwise
  */
 -(BOOL)prnCalibrateBlackMark:(int *)treshold error:(NSError **)error;
-/**
- Loads logo into printer's memory. The logo is persistent and can be deleted only if battery is removed
- @param logo logo bitmap data
- @param align logo alignment, one of the ALIGN_* constants
- @param error returns error information, you can pass nil if you don't want it
- @return TRUE upon success, FALSE otherwise
- */
--(BOOL)prnLoadLogo:(UIImage *)logo align:(int)align error:(NSError **)error;
 /**
  Prints Bitmap object using specified alignment. You can print color bitmaps, as they will be converted to black and white using error diffusion and dithering to achieve best results. On older devices this can take some time
  @param image UIImage object
@@ -7639,9 +8176,23 @@ typedef enum {
  */
 -(BOOL)pageIsSupported;
 /**
+ Enables or disables coordinate translation. If enabled and a mode different from the default top-left, the coordinates will be adjusted so you use coordinates as if the pintout is horizontal top-left start, and they will be automaticall set to the correct values
+ @param enabled enable or disable coordinate translation
+ @param error returns error information, you can pass nil if you don't want it
+ @return TRUE upon success, FALSE otherwise
+ */
+-(BOOL)pageSetCoordinatesTranslation:(BOOL)enabled error:(NSError **)error;
+/**
+ Sets virtual page mode label height. By default this height is the height of the virtual page itself and does not need to be changed. The only reason to set it is if you use coordinates translation and one of the bottom-starting coordinate origins, allowing the sdk to correctly calculate values. Without setting it, using bottom-based starting coordinates will result in whole page being printed, wasting paper.
+ @param height page mode height between 0 (automatic) and the page mode max height
+ @param error returns error information, you can pass nil if you don't want it
+ @return TRUE upon success, FALSE otherwise
+ */
+-(BOOL)pageSetLabelHeight:(int)height error:(NSError **)error;
+/**
  Creates a new virtual page using the maximum supported page height.
- Use {@link #getInfo:(int)infocmd} to get the maximum page height supported.
- See {@link #pageStart} for more detailed information
+ Use getInfo function to get the maximum page height supported.
+ See pageStart function for more detailed information
  The page mode allows constructing a virtual page inside the printer, draw text, graphics,
  and performs some basic graphics operations (draw rectangles, frames, invert parts of the page)
  at any place, rotated or not, then print the result.
@@ -7654,7 +8205,7 @@ typedef enum {
 /**
  Prints the content of the virtual page.
  @note The white space from the top and bottom is not printed so the print ends at the last black dot.
- If you want to feed the paper use the {@link #prnFeedPaper:(int)lines error:(NSError **)error} function
+ If you want to feed the paper use the prnFeedPaper function
  @param error returns error information, you can pass nil if you don't want it
  @return TRUE upon success, FALSE otherwise
  */
@@ -7667,14 +8218,20 @@ typedef enum {
 -(BOOL)pageEnd:(NSError **)error;
 /**
  Sets a working area and orientation inside the virtual page. No drawing can ever occur outside the said area
- @param left, top, width, height working area rectangle in absolute pixels (i.e. does not depend on the page orientation)
+ @param left left coordinate of the working area in absolute pixels (i.e. does not depend on the page orientation)
+ @param top top coordinate of the working area in absolute pixels (i.e. does not depend on the page orientation)
+ @param width width of the working area in absolute pixels (i.e. does not depend on the page orientation)
+ @param height height of the working area in absolute pixels (i.e. does not depend on the page orientation)
  @param error returns error information, you can pass nil if you don't want it
  @return TRUE upon success, FALSE otherwise
  */
 -(BOOL)pageSetWorkingArea:(int)left top:(int)top width:(int)width height:(int)height error:(NSError **)error;
 /**
  Sets a working area and orientation inside the virtual page. No drawing can ever occur outside the said area
- @param left, top, width, height working area rectangle in absolute pixels (i.e. does not depend on the page orientation)
+ @param left left coordinate of the working area in absolute pixels (i.e. does not depend on the page orientation)
+ @param top top coordinate of the working area in absolute pixels (i.e. does not depend on the page orientation)
+ @param width width of the working area in absolute pixels (i.e. does not depend on the page orientation)
+ @param height height of the working area in absolute pixels (i.e. does not depend on the page orientation)
  @param orientation one of the PAGE_* constants
  @param error returns error information, you can pass nil if you don't want it
  @return TRUE upon success, FALSE otherwise
@@ -7689,7 +8246,10 @@ typedef enum {
 -(BOOL)pageFillRectangle:(UIColor *)color error:(NSError **)error;
 /**
  Fills a rectangle inside the current working area with specified color
- @param left, top, width, height rectangle coordinates
+ @param left left coordinate of the rectangle
+ @param top top coordinate of the rectangle
+ @param width width of the rectangle
+ @param height height of the rectangle
  @param color - the color to use, either COLOR_INVERT or custom UIColor
  @param error returns error information, you can pass nil if you don't want it
  @return TRUE upon success, FALSE otherwise
@@ -7697,7 +8257,10 @@ typedef enum {
 -(BOOL)pageFillRectangle:(int)left top:(int)top width:(int)width height:(int)height color:(UIColor *)color error:(NSError **)error;
 /**
  Draws a rectangle frame inside the current working area with specified color
- @param left, top, width, height rectangle coordinates
+ @param left left coordinate of the rectangle
+ @param top top coordinate of the rectangle
+ @param width width of the rectangle
+ @param height height of the rectangle
  @param framewidth width of the frame (1-64)
  @param color - the color to use, either COLOR_INVERT or custom UIColor
  @param error returns error information, you can pass nil if you don't want it
@@ -7817,7 +8380,7 @@ typedef enum {
  */
 -(BOOL)tableSetRowHeight:(int)height error:(NSError **)error;
 /**
- Prints current table or throws IllegalArgumentException if cell data cannot be fit into paper
+ Prints current table or returns FALSE if cell data cannot be fit into paper
  @param error returns error information, you can pass nil if you don't want it
  @return TRUE upon success, FALSE otherwise
  */
@@ -7837,7 +8400,7 @@ typedef enum {
 /**
  Returns current connection type
  **/
-@property(readonly) enum DEVICE_CONNECTION_TYPE connectionType;
+@property(readonly) DEVICE_CONNECTION_TYPE connectionType;
 /**
  Returns current connection state
  **/
