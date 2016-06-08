@@ -47,6 +47,10 @@
 		<dict>
 			<key>Type</key>
 			<string>PSTextFieldSpecifier</string>
+			<key>Title</key>
+			<string>Function</string>
+			<key>Key</key>
+			<string>callback_preference</string>
 			<key>DefaultValue</key>
 			<string>getBarcode</string>
 			<key>AutocapitalizationType</key>
@@ -57,10 +61,6 @@
 			<false/>
 			<key>KeyboardType</key>
 			<string>Alphabet</string>
-			<key>Title</key>
-			<string>Function</string>
-			<key>Key</key>
-			<string>callback_preference</string>
 		</dict>
 		<dict>
 			<key>Type</key>

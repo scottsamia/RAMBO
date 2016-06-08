@@ -17,6 +17,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
         NSURLProtocol.registerClass(MyURLProtocol)
+        registerDefaultsFromSettingsBundle()
         return true
     }
     
@@ -46,6 +47,42 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func applicationWillTerminate(application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+    }
+    
+    func registerDefaultsFromSettingsBundle(){
+        let defaults = NSUserDefaults.standardUserDefaults()
+        defaults.synchronize()
+        
+        let settingsBundle: NSString = NSBundle.mainBundle().pathForResource("Settings", ofType: "bundle")!
+        
+        if(settingsBundle.containsString("")){
+            NSLog("Could not find Settings.bundle");
+            return;
+        }
+        
+        let settings = NSDictionary(contentsOfFile: settingsBundle.stringByAppendingPathComponent("Root.plist"))!
+        let preferences = settings.objectForKey("PreferenceSpecifiers") as! NSArray;
+        
+        var defaultsToRegister = [String: AnyObject](minimumCapacity: preferences.count);
+        
+        for prefSpecification in preferences { if (prefSpecification.objectForKey("Key") != nil) {
+            let key = prefSpecification.objectForKey("Key")! as! String
+            
+            if !key.containsString("") {
+                let currentObject = defaults.objectForKey(key)
+                if currentObject == nil {
+                    
+                    let objectToSet = prefSpecification.objectForKey("DefaultValue")
+                    defaultsToRegister[key] = objectToSet!
+                    
+                    NSLog("Setting object \(objectToSet) for key \(key)")
+                }
+            }
+            }
+        }
+        
+        defaults.registerDefaults(defaultsToRegister)
+        defaults.synchronize()
     }
 
 

@@ -33,7 +33,6 @@ class ViewController: UIViewController, UIWebViewDelegate, NSURLConnectionDelega
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        
         //webView.delegate = self
         scanner.delegate = self
         
@@ -236,7 +235,7 @@ class ViewController: UIViewController, UIWebViewDelegate, NSURLConnectionDelega
         
         previewLayer = AVCaptureVideoPreviewLayer(layer: session) as AVCaptureVideoPreviewLayer
         //previewLayer.frame = self.view.bounds
-        previewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill
+        //previewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill
         
     }
     

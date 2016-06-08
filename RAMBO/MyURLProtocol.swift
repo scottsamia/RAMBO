@@ -12,7 +12,7 @@ var requestCount = 0
 
 class MyURLProtocol: NSURLProtocol {
     
-    var connection: NSURLSession!
+    var connection: NSURLConnection!
     
     override class func canInitWithRequest(request: NSURLRequest) -> Bool {
         //NSLog("Request #\(requestCount++): URL = \(request.URL!.absoluteString)")
@@ -37,17 +37,19 @@ class MyURLProtocol: NSURLProtocol {
         let newRequest = self.request.mutableCopy() as! NSMutableURLRequest
         NSURLProtocol.setProperty(true, forKey: "MyURLProtocolHandledKey", inRequest: newRequest)
         
-        var session:NSURLSession
+        self.connection = NSURLConnection(request: newRequest, delegate: self)
         
-        let configuration = NSURLSessionConfiguration.defaultSessionConfiguration()
-        session = NSURLSession(configuration: configuration)
-        session.dataTaskWithRequest(newRequest)
-        self.connection = session //NSURLSession(request: newRequest, delegate: self)
+//        var session:NSURLSession
+//        
+//        let configuration = NSURLSessionConfiguration.defaultSessionConfiguration()
+//        session = NSURLSession(configuration: configuration)
+//        session.dataTaskWithRequest(newRequest)
+//        self.connection = session //NSURLSession(request: newRequest, delegate: self)
     }
     
     override func stopLoading() {
         if self.connection != nil {
-            self.connection.invalidateAndCancel()
+            self.connection.cancel()
         }
         self.connection = nil
     }
